@@ -1,0 +1,53 @@
+spring:
+  application:
+    name: smartmes-backend
+
+  datasource:
+    url: jdbc:mysql://localhost:3306/smartmes_lite?useUnicode=true&characterEncoding=utf8&useSSL=false&serverTimezone=Asia/Shanghai
+    username: root
+    password:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    hikari:
+      maximum-pool-size: 10
+      minimum-idle: 5
+      connection-timeout: 30000
+      idle-timeout: 600000
+      max-lifetime: 1800000
+
+  # Jackson JSON configuration
+  jackson:
+    date-format: yyyy-MM-dd HH:mm:ss
+    time-zone: GMT+8
+    serialization:
+      write-dates-as-timestamps: false
+
+# JPA Configuration
+  jpa:
+    hibernate:
+      ddl-auto: none
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+        dialect: org.hibernate.dialect.MySQL8Dialect
+
+# MyBatis Configuration
+mybatis:
+  mapper-locations: classpath:com/smartmes/mapper/xml/*.xml
+  type-aliases-package: com.smartmes.entity
+  configuration:
+    map-underscore-to-camel-case: true
+    default-enum-type-handler: org.apache.ibatis.type.EnumTypeHandler
+    log-impl: org.apache.ibatis.logging.slf4j.Slf4jImpl
+
+server:
+  port: 8080
+  servlet:
+    context-path: /api
+
+logging:
+  level:
+    com.smartmes: DEBUG
+    com.smartmes.mapper: DEBUG
+  pattern:
+    console: '%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n'

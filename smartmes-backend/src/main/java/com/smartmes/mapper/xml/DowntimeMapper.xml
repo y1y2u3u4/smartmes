@@ -1,0 +1,218 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.smartmes.mapper.DowntimeMapper">
+
+    <!-- Result Map -->
+    <resultMap id="DowntimeReportResultMap" type="com.smartmes.entity.DowntimeReport">
+        <id property="reportId" column="report_id"/>
+        <result property="orderId" column="order_id"/>
+        <result property="equipmentId" column="equipment_id"/>
+        <result property="downtimeType" column="downtime_type"
+                typeHandler="org.apache.ibatis.type.EnumTypeHandler"/>
+        <result property="description" column="description"/>
+        <result property="startTime" column="start_time"/>
+        <result property="endTime" column="end_time"/>
+        <result property="durationMinutes" column="duration_minutes"/>
+        <result property="reporterId" column="reporter_id"/>
+        <result property="responderId" column="responder_id"/>
+        <result property="solution" column="solution"/>
+        <result property="status" column="status"
+                typeHandler="org.apache.ibatis.type.EnumTypeHandler"/>
+        <result property="attachments" column="attachments"/>
+        <result property="createdAt" column="created_at"/>
+        <result property="updatedAt" column="updated_at"/>
+    </resultMap>
+
+    <!-- Base Column List -->
+    <sql id="Base_Column_List">
+        report_id, order_id, equipment_id, downtime_type, description,
+        start_time, end_time, duration_minutes, reporter_id, responder_id,
+        solution, status, attachments, created_at, updated_at
+    </sql>
+
+    <!-- Insert -->
+    <insert id="insert" parameterType="com.smartmes.entity.DowntimeReport"
+            useGeneratedKeys="true" keyProperty="reportId">
+        INSERT INTO downtime_report (
+            order_id, equipment_id, downtime_type, description,
+            start_time, end_time, duration_minutes, reporter_id,
+            responder_id, solution, status, attachments,
+            created_at, updated_at
+        ) VALUES (
+            #{orderId}, #{equipmentId}, #{downtimeType}, #{description},
+            #{startTime}, #{endTime}, #{durationMinutes}, #{reporterId},
+            #{responderId}, #{solution}, #{status}, #{attachments},
+            #{createdAt}, #{updatedAt}
+        )
+    </insert>
+
+    <!-- Update -->
+    <update id="update" parameterType="com.smartmes.entity.DowntimeReport">
+        UPDATE downtime_report
+        <set>
+            <if test="orderId != null">order_id = #{orderId},</if>
+            <if test="equipmentId != null">equipment_id = #{equipmentId},</if>
+            <if test="downtimeType != null">downtime_type = #{downtimeType},</if>
+            <if test="description != null">description = #{description},</if>
+            <if test="startTime != null">start_time = #{startTime},</if>
+            <if test="endTime != null">end_time = #{endTime},</if>
+            <if test="durationMinutes != null">duration_minutes = #{durationMinutes},</if>
+            <if test="reporterId != null">reporter_id = #{reporterId},</if>
+            <if test="responderId != null">responder_id = #{responderId},</if>
+            <if test="solution != null">solution = #{solution},</if>
+            <if test="status != null">status = #{status},</if>
+            <if test="attachments != null">attachments = #{attachments},</if>
+            updated_at = NOW()
+        </set>
+        WHERE report_id = #{reportId}
+    </update>
+
+    <!-- Find by ID -->
+    <select id="findById" resultMap="DowntimeReportResultMap">
+        SELECT <include refid="Base_Column_List"/>
+        FROM downtime_report
+        WHERE report_id = #{reportId}
+    </select>
+
+    <!-- Dynamic Query Conditions -->
+    <sql id="Query_Conditions">
+        <where>
+            <if test="orderId != null and orderId != ''">
+                AND order_id = #{orderId}
+            </if>
+            <if test="equipmentId != null and equipmentId != ''">
+                AND equipment_id = #{equipmentId}
+            </if>
+            <if test="downtimeType != null">
+                AND downtime_type = #{downtimeType}
+            </if>
+            <if test="status != null">
+                AND status = #{status}
+            </if>
+            <if test="startTimeFrom != null">
+                AND start_time &gt;= #{startTimeFrom}
+            </if>
+            <if test="startTimeTo != null">
+                AND start_time &lt;= #{startTimeTo}
+            </if>
+            <if test="reporterId != null and reporterId != ''">
+                AND reporter_id = #{reporterId}
+            </if>
+        </where>
+    </sql>
+
+    <!-- Find by Conditions -->
+    <select id="findByConditions" resultMap="DowntimeReportResultMap">
+        SELECT <include refid="Base_Column_List"/>
+        FROM downtime_report
+        <include refid="Query_Conditions"/>
+        <if test="sortBy != null and sortBy != ''">
+            ORDER BY ${sortBy}
+            <if test="sortOrder != null and sortOrder != ''">
+                ${sortOrder}
+            </if>
+        </if>
+        <if test="pageNum != null and pageSize != null">
+            LIMIT #{pageSize} OFFSET #{pageNum}
+        </if>
+    </select>
+
+    <!-- Count by Conditions -->
+    <select id="countByConditions" resultType="java.lang.Long">
+        SELECT COUNT(*)
+        FROM downtime_report
+        <include refid="Query_Conditions"/>
+    </select>
+
+    <!-- Update Status -->
+    <update id="updateStatus">
+        UPDATE downtime_report
+        SET status = #{status},
+            updated_at = NOW()
+        WHERE report_id = #{reportId}
+    </update>
+
+    <!-- Update Responder -->
+    <update id="updateResponder">
+        UPDATE downtime_report
+        SET responder_id = #{responderId},
+            updated_at = NOW()
+        WHERE report_id = #{reportId}
+    </update>
+
+    <!-- Update Resolution -->
+    <update id="updateResolution">
+        UPDATE downtime_report
+        SET end_time = #{endTime},
+            duration_minutes = #{durationMinutes},
+            solution = #{solution},
+            status = #{status},
+            updated_at = NOW()
+        WHERE report_id = #{reportId}
+    </update>
+
+    <!-- Count Total -->
+    <select id="countTotal" resultType="java.lang.Long">
+        SELECT COUNT(*)
+        FROM downtime_report
+    </select>
+
+    <!-- Sum Total Duration -->
+    <select id="sumTotalDuration" resultType="java.lang.Long">
+        SELECT COALESCE(SUM(duration_minutes), 0)
+        FROM downtime_report
+        WHERE duration_minutes IS NOT NULL
+    </select>
+
+    <!-- Count by Status -->
+    <select id="countByStatus" resultType="java.lang.Long">
+        SELECT COUNT(*)
+        FROM downtime_report
+        WHERE status = #{status}
+    </select>
+
+    <!-- Count by Type -->
+    <select id="countByType" resultType="java.util.Map">
+        SELECT
+            downtime_type as type,
+            COUNT(*) as count
+        FROM downtime_report
+        GROUP BY downtime_type
+    </select>
+
+    <!-- Get Top Equipment by Incidents -->
+    <select id="getTopEquipmentByIncidents"
+            resultType="com.smartmes.dto.DowntimeStatisticsDTO$EquipmentDowntimeStats">
+        SELECT
+            equipment_id as equipmentId,
+            COUNT(*) as incidentCount,
+            COALESCE(SUM(duration_minutes), 0) as totalDurationMinutes
+        FROM downtime_report
+        GROUP BY equipment_id
+        ORDER BY incidentCount DESC
+        LIMIT #{limit}
+    </select>
+
+    <!-- Get Top Equipment by Duration -->
+    <select id="getTopEquipmentByDuration"
+            resultType="com.smartmes.dto.DowntimeStatisticsDTO$EquipmentDowntimeStats">
+        SELECT
+            equipment_id as equipmentId,
+            COUNT(*) as incidentCount,
+            COALESCE(SUM(duration_minutes), 0) as totalDurationMinutes
+        FROM downtime_report
+        WHERE duration_minutes IS NOT NULL
+        GROUP BY equipment_id
+        ORDER BY totalDurationMinutes DESC
+        LIMIT #{limit}
+    </select>
+
+    <!-- Delete -->
+    <delete id="delete">
+        DELETE FROM downtime_report
+        WHERE report_id = #{reportId}
+    </delete>
+
+</mapper>

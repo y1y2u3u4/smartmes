@@ -1,0 +1,43 @@
+# Git
+.git/
+.gitignore
+.gitattributes
+
+# IDE
+.vscode/
+.idea/
+*.iml
+*.iws
+*.ipr
+
+# Documentation
+README.md
+docs/
+*.md
+
+# Logs
+logs/
+*.log
+
+# Temporary files
+*.tmp
+*.bak
+*.swp
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Environment
+.env
+.env.local
+
+# Backups
+backups/
+
+# Build artifacts
+target/
+dist/
+node_modules/
+build/

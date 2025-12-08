@@ -1,0 +1,168 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.smartmes.mapper.DowntimeMapper">
+
+    <!-- Result Map for DowntimeReport -->
+    <resultMap id="BaseResultMap" type="com.smartmes.entity.DowntimeReport">
+        <id column="report_id" property="reportId" />
+        <result column="equipment_id" property="equipmentId" />
+        <result column="downtime_type" property="downtimeType" />
+        <result column="status" property="status" />
+        <result column="description" property="description" />
+        <result column="reporter_id" property="reporterId" />
+        <result column="responder_id" property="responderId" />
+        <result column="start_time" property="startTime" />
+        <result column="end_time" property="endTime" />
+        <result column="duration_minutes" property="durationMinutes" />
+        <result column="root_cause" property="rootCause" />
+        <result column="solution" property="solution" />
+        <result column="photo_urls" property="photoUrls" />
+        <result column="created_at" property="createdAt" />
+        <result column="updated_at" property="updatedAt" />
+    </resultMap>
+
+    <!-- Insert -->
+    <insert id="insert" parameterType="com.smartmes.entity.DowntimeReport" useGeneratedKeys="true" keyProperty="reportId">
+        INSERT INTO downtime_report (
+            equipment_id, downtime_type, status, description,
+            reporter_id, start_time, photo_urls, created_at, updated_at
+        ) VALUES (
+            #{equipmentId}, #{downtimeType}, #{status}, #{description},
+            #{reporterId}, #{startTime}, #{photoUrls}, NOW(), NOW()
+        )
+    </insert>
+
+    <!-- Update -->
+    <update id="update" parameterType="com.smartmes.entity.DowntimeReport">
+        UPDATE downtime_report
+        SET equipment_id = #{equipmentId},
+            downtime_type = #{downtimeType},
+            status = #{status},
+            description = #{description},
+            responder_id = #{responderId},
+            end_time = #{endTime},
+            duration_minutes = #{durationMinutes},
+            root_cause = #{rootCause},
+            solution = #{solution},
+            photo_urls = #{photoUrls},
+            updated_at = NOW()
+        WHERE report_id = #{reportId}
+    </update>
+
+    <!-- Find by ID -->
+    <select id="findById" parameterType="long" resultMap="BaseResultMap">
+        SELECT * FROM downtime_report WHERE report_id = #{reportId}
+    </select>
+
+    <!-- Find by conditions -->
+    <select id="findByConditions" parameterType="com.smartmes.dto.DowntimeQueryDTO" resultMap="BaseResultMap">
+        SELECT * FROM downtime_report
+        <where>
+            <if test="equipmentId != null">
+                AND equipment_id = #{equipmentId}
+            </if>
+            <if test="downtimeType != null">
+                AND downtime_type = #{downtimeType}
+            </if>
+            <if test="status != null">
+                AND status = #{status}
+            </if>
+            <if test="startDate != null">
+                AND DATE(start_time) &gt;= #{startDate}
+            </if>
+            <if test="endDate != null">
+                AND DATE(start_time) &lt;= #{endDate}
+            </if>
+        </where>
+        ORDER BY start_time DESC
+        <if test="offset != null and limit != null">
+            LIMIT #{offset}, #{limit}
+        </if>
+    </select>
+
+    <!-- Count by conditions -->
+    <select id="countByConditions" parameterType="com.smartmes.dto.DowntimeQueryDTO" resultType="long">
+        SELECT COUNT(*) FROM downtime_report
+        <where>
+            <if test="equipmentId != null">
+                AND equipment_id = #{equipmentId}
+            </if>
+            <if test="downtimeType != null">
+                AND downtime_type = #{downtimeType}
+            </if>
+            <if test="status != null">
+                AND status = #{status}
+            </if>
+            <if test="startDate != null">
+                AND DATE(start_time) &gt;= #{startDate}
+            </if>
+            <if test="endDate != null">
+                AND DATE(start_time) &lt;= #{endDate}
+            </if>
+        </where>
+    </select>
+
+    <!-- Update status -->
+    <update id="updateStatus">
+        UPDATE downtime_report
+        SET status = #{status}, updated_at = NOW()
+        WHERE report_id = #{reportId}
+    </update>
+
+    <!-- Update responder -->
+    <update id="updateResponder">
+        UPDATE downtime_report
+        SET responder_id = #{responderId}, updated_at = NOW()
+        WHERE report_id = #{reportId}
+    </update>
+
+    <!-- Resolve downtime -->
+    <update id="resolve">
+        UPDATE downtime_report
+        SET status = 'RESOLVED',
+            end_time = #{endTime},
+            duration_minutes = #{durationMinutes},
+            root_cause = #{rootCause},
+            solution = #{solution},
+            updated_at = NOW()
+        WHERE report_id = #{reportId}
+    </update>
+
+    <!-- Get statistics by type -->
+    <select id="getStatisticsByType" resultType="com.smartmes.dto.DowntimeStatisticsDTO">
+        SELECT
+            downtime_type as type,
+            COUNT(*) as count,
+            AVG(duration_minutes) as avgDuration
+        FROM downtime_report
+        <where>
+            <if test="startDate != null">
+                AND DATE(start_time) &gt;= #{startDate}
+            </if>
+            <if test="endDate != null">
+                AND DATE(start_time) &lt;= #{endDate}
+            </if>
+        </where>
+        GROUP BY downtime_type
+    </select>
+
+    <!-- Get top equipment failures -->
+    <select id="getTopEquipmentFailures" resultType="map">
+        SELECT
+            e.equipment_name as name,
+            COUNT(*) as value
+        FROM downtime_report dr
+        JOIN equipment e ON dr.equipment_id = e.equipment_id
+        WHERE dr.downtime_type = 'EQUIPMENT_FAULT'
+        <if test="startDate != null">
+            AND DATE(dr.start_time) &gt;= #{startDate}
+        </if>
+        <if test="endDate != null">
+            AND DATE(dr.start_time) &lt;= #{endDate}
+        </if>
+        GROUP BY e.equipment_id, e.equipment_name
+        ORDER BY COUNT(*) DESC
+        LIMIT #{limit}
+    </select>
+
+</mapper>

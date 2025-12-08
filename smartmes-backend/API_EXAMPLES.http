@@ -1,0 +1,244 @@
+### SmartMES Lite - Downtime Module API Examples
+### 使用方法：在支持.http文件的IDE（如IntelliJ IDEA、VS Code with REST Client插件）中打开此文件
+### 点击每个请求上方的"Send Request"或"Run"按钮执行请求
+
+### 变量定义
+@baseUrl = http://localhost:8080/api
+@contentType = application/json
+
+### 1. 上报异常停机 (Report Downtime)
+POST {{baseUrl}}/downtime/report
+Content-Type: {{contentType}}
+
+{
+  "orderId": "WO-20240101-001",
+  "equipmentId": "EQ-001",
+  "downtimeType": "EQUIPMENT_FAILURE",
+  "description": "Conveyor belt motor malfunction - urgent repair needed",
+  "startTime": "2024-01-15T09:30:00",
+  "reporterId": "USER-001",
+  "attachments": "/uploads/photo1.jpg,/uploads/photo2.jpg"
+}
+
+###
+
+### 2. 上报另一个异常 - 物料缺料 (Material Shortage)
+POST {{baseUrl}}/downtime/report
+Content-Type: {{contentType}}
+
+{
+  "orderId": "WO-20240101-002",
+  "equipmentId": "EQ-002",
+  "downtimeType": "MATERIAL_SHORTAGE",
+  "description": "Insufficient raw material for production batch",
+  "startTime": "2024-01-15T10:00:00",
+  "reporterId": "USER-002"
+}
+
+###
+
+### 3. 查询所有异常列表 (Query All Reports - Page 1)
+GET {{baseUrl}}/downtime/reports?pageNum=1&pageSize=10
+
+###
+
+### 4. 按设备查询异常 (Query by Equipment)
+GET {{baseUrl}}/downtime/reports?equipmentId=EQ-001&pageNum=1&pageSize=10
+
+###
+
+### 5. 按状态查询 - 待处理 (Query by Status - PENDING)
+GET {{baseUrl}}/downtime/reports?status=PENDING&pageNum=1&pageSize=10
+
+###
+
+### 6. 按类型查询 - 设备故障 (Query by Type - EQUIPMENT_FAILURE)
+GET {{baseUrl}}/downtime/reports?downtimeType=EQUIPMENT_FAILURE&pageNum=1&pageSize=10
+
+###
+
+### 7. 按时间范围查询 (Query by Time Range)
+GET {{baseUrl}}/downtime/reports?startTimeFrom=2024-01-01T00:00:00&startTimeTo=2024-01-31T23:59:59&pageNum=1&pageSize=10
+
+###
+
+### 8. 组合查询 (Combined Query)
+GET {{baseUrl}}/downtime/reports?equipmentId=EQ-001&status=PENDING&downtimeType=EQUIPMENT_FAILURE&pageNum=1&pageSize=10
+
+###
+
+### 9. 查询异常详情 (Get Report Details by ID)
+### 注意：将{reportId}替换为实际的报告ID
+GET {{baseUrl}}/downtime/reports/1
+
+###
+
+### 10. 响应异常 (Respond to Downtime)
+### 注意：将{reportId}替换为实际的报告ID
+PUT {{baseUrl}}/downtime/reports/1/respond
+Content-Type: {{contentType}}
+
+{
+  "responderId": "TECH-001",
+  "responseNotes": "On-site inspection in progress, preliminary assessment completed"
+}
+
+###
+
+### 11. 解决异常 (Resolve Downtime)
+### 注意：将{reportId}替换为实际的报告ID
+PUT {{baseUrl}}/downtime/reports/1/resolve
+Content-Type: {{contentType}}
+
+{
+  "endTime": "2024-01-15T11:00:00",
+  "solution": "Replaced faulty motor with new unit, performed comprehensive system check, all operations normal"
+}
+
+###
+
+### 12. 获取统计数据 (Get Statistics)
+GET {{baseUrl}}/downtime/statistics
+
+###
+
+### 13. 删除异常记录 (Delete Report)
+### 注意：将{reportId}替换为实际的报告ID
+DELETE {{baseUrl}}/downtime/reports/1
+
+###
+
+### ========================================
+### 完整工作流示例 (Complete Workflow Example)
+### ========================================
+
+### Step 1: 上报新的异常
+POST {{baseUrl}}/downtime/report
+Content-Type: {{contentType}}
+
+{
+  "orderId": "WO-20240115-003",
+  "equipmentId": "EQ-003",
+  "downtimeType": "QUALITY_ISSUE",
+  "description": "Product quality below standard, defect rate exceeds 5%",
+  "startTime": "2024-01-15T14:30:00",
+  "reporterId": "QC-001"
+}
+
+###
+
+### Step 2: 技术人员响应（假设上一步创建的报告ID为2）
+PUT {{baseUrl}}/downtime/reports/2/respond
+Content-Type: {{contentType}}
+
+{
+  "responderId": "TECH-002",
+  "responseNotes": "Quality inspection team dispatched to production line"
+}
+
+###
+
+### Step 3: 查询该异常的详细信息
+GET {{baseUrl}}/downtime/reports/2
+
+###
+
+### Step 4: 解决异常
+PUT {{baseUrl}}/downtime/reports/2/resolve
+Content-Type: {{contentType}}
+
+{
+  "endTime": "2024-01-15T16:00:00",
+  "solution": "Adjusted machine parameters, recalibrated quality sensors, retrained operators on quality standards"
+}
+
+###
+
+### Step 5: 再次查询确认已解决
+GET {{baseUrl}}/downtime/reports/2
+
+###
+
+### Step 6: 查看最新统计数据
+GET {{baseUrl}}/downtime/statistics
+
+###
+
+### ========================================
+### 批量测试数据 (Batch Test Data)
+### ========================================
+
+### 创建测试数据 1 - 设备故障
+POST {{baseUrl}}/downtime/report
+Content-Type: {{contentType}}
+
+{
+  "orderId": "WO-20240116-001",
+  "equipmentId": "EQ-001",
+  "downtimeType": "EQUIPMENT_FAILURE",
+  "description": "Hydraulic pump pressure loss",
+  "startTime": "2024-01-16T08:00:00",
+  "reporterId": "USER-001"
+}
+
+###
+
+### 创建测试数据 2 - 物料缺料
+POST {{baseUrl}}/downtime/report
+Content-Type: {{contentType}}
+
+{
+  "orderId": "WO-20240116-002",
+  "equipmentId": "EQ-002",
+  "downtimeType": "MATERIAL_SHORTAGE",
+  "description": "Steel sheet shortage, awaiting supplier delivery",
+  "startTime": "2024-01-16T09:00:00",
+  "reporterId": "USER-002"
+}
+
+###
+
+### 创建测试数据 3 - 人员失误
+POST {{baseUrl}}/downtime/report
+Content-Type: {{contentType}}
+
+{
+  "orderId": "WO-20240116-003",
+  "equipmentId": "EQ-004",
+  "downtimeType": "OPERATOR_ERROR",
+  "description": "Incorrect parameter settings caused production halt",
+  "startTime": "2024-01-16T10:30:00",
+  "reporterId": "SUPERVISOR-001"
+}
+
+###
+
+### ========================================
+### 错误场景测试 (Error Scenario Testing)
+### ========================================
+
+### 测试：缺少必填字段
+POST {{baseUrl}}/downtime/report
+Content-Type: {{contentType}}
+
+{
+  "orderId": "WO-20240116-004",
+  "downtimeType": "EQUIPMENT_FAILURE"
+}
+
+###
+
+### 测试：查询不存在的报告
+GET {{baseUrl}}/downtime/reports/99999
+
+###
+
+### 测试：响应已解决的报告（应该失败）
+PUT {{baseUrl}}/downtime/reports/1/respond
+Content-Type: {{contentType}}
+
+{
+  "responderId": "TECH-001"
+}
+
+###

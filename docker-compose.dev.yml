@@ -1,0 +1,79 @@
+version: '3.8'
+
+# 开发环境Docker Compose配置
+# 使用方式: docker-compose -f docker-compose.yml -f docker-compose.dev.yml up
+
+services:
+  mysql:
+    ports:
+      # 暴露MySQL端口供本地开发工具连接
+      - "3306:3306"
+    volumes:
+      # 使用命名卷而非持久化卷，方便开发环境重置
+      - mysql-dev-data:/var/lib/mysql
+      - ./database/schema.sql:/docker-entrypoint-initdb.d/1-schema.sql
+      - ./database/init_data.sql:/docker-entrypoint-initdb.d/2-init_data.sql
+
+  backend:
+    build:
+      context: ./smartmes-backend
+      dockerfile: Dockerfile.dev
+      args:
+        - MAVEN_OPTS=-Dmaven.repo.local=/root/.m2/repository
+    ports:
+      - "8080:8080"
+      # 开启远程调试端口
+      - "5005:5005"
+    environment:
+      SPRING_PROFILES_ACTIVE: dev
+      # 开发环境数据库配置
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/smartmes?useUnicode=true&characterEncoding=utf8&useSSL=false&serverTimezone=Asia/Shanghai
+      SPRING_DATASOURCE_USERNAME: smartmes
+      SPRING_DATASOURCE_PASSWORD: smartmes123
+      # 开启远程调试
+      JAVA_OPTS: -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005 -Xms256m -Xmx512m
+      # Spring DevTools热重载
+      SPRING_DEVTOOLS_RESTART_ENABLED: "true"
+      # 日志级别
+      LOGGING_LEVEL_ROOT: INFO
+      LOGGING_LEVEL_COM_SMARTMES: DEBUG
+    volumes:
+      # 挂载源码目录支持热重载
+      - ./smartmes-backend/src:/app/src
+      # 挂载Maven仓库缓存
+      - maven-cache:/root/.m2
+      # 挂载日志目录
+      - ./logs/backend:/app/logs
+    command: ["mvn", "spring-boot:run"]
+
+  frontend:
+    build:
+      context: ./smartmes-frontend
+      dockerfile: Dockerfile.dev
+    ports:
+      - "80:80"
+      # Vite开发服务器端口
+      - "5173:5173"
+    environment:
+      NODE_ENV: development
+      # API代理配置
+      VITE_API_BASE_URL: http://backend:8080
+    volumes:
+      # 挂载源码目录支持热重载
+      - ./smartmes-frontend/src:/app/src
+      - ./smartmes-frontend/public:/app/public
+      - ./smartmes-frontend/index.html:/app/index.html
+      - ./smartmes-frontend/vite.config.js:/app/vite.config.js
+      # node_modules使用命名卷提高性能
+      - node-modules:/app/node_modules
+    command: ["npm", "run", "dev", "--", "--host", "0.0.0.0"]
+    stdin_open: true
+    tty: true
+
+volumes:
+  mysql-dev-data:
+    driver: local
+  maven-cache:
+    driver: local
+  node-modules:
+    driver: local

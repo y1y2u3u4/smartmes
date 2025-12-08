@@ -1,0 +1,68 @@
+version: '3.8'
+
+# 生产环境Docker Compose配置
+# 使用方式: docker-compose -f docker-compose.yml -f docker-compose.prod.yml up -d
+
+services:
+  mysql:
+    # 生产环境资源限制
+    deploy:
+      resources:
+        limits:
+          cpus: '2'
+          memory: 2G
+        reservations:
+          cpus: '1'
+          memory: 1G
+    # 生产环境日志配置
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+    # 增强的备份卷
+    volumes:
+      - mysql-data:/var/lib/mysql
+      - ./backups:/backups
+
+  backend:
+    # 生产环境资源限制
+    deploy:
+      resources:
+        limits:
+          cpus: '2'
+          memory: 2G
+        reservations:
+          cpus: '1'
+          memory: 1G
+      # 副本数量（需要Docker Swarm）
+      replicas: 2
+    # 生产环境JVM参数
+    environment:
+      JAVA_OPTS: -Xms1024m -Xmx2048m -XX:+UseG1GC -XX:MaxGCPauseMillis=200 -XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=/app/logs
+      SPRING_PROFILES_ACTIVE: prod
+    # 生产环境日志配置
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "50m"
+        max-file: "5"
+
+  frontend:
+    # 生产环境资源限制
+    deploy:
+      resources:
+        limits:
+          cpus: '1'
+          memory: 512M
+        reservations:
+          cpus: '0.5'
+          memory: 256M
+      # 副本数量（需要Docker Swarm）
+      replicas: 2
+    # 生产环境日志配置
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"

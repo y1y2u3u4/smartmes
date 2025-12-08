@@ -1,0 +1,52 @@
+# Environment variables
+.env
+
+# Logs
+logs/
+*.log
+
+# Database
+*.sql~
+backups/
+
+# Docker
+.docker/
+
+# IDE
+.vscode/
+.idea/
+*.iml
+*.iws
+*.ipr
+.settings/
+.classpath
+.project
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Temporary files
+*.tmp
+*.bak
+*.swp
+*~
+
+# Build artifacts (keep Dockerfiles)
+target/
+dist/
+node_modules/
+build/
+.next/
+out/
+
+# Test coverage
+coverage/
+.nyc_output/
+
+# Cache
+.cache/
+.parcel-cache/
+
+# Uploads
+uploads/
