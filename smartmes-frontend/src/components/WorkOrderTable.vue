@@ -11,28 +11,28 @@
 
     <el-table-column
       prop="work_order_number"
-      label="Work Order No."
+      :label="$t('workOrder.workOrderNo')"
       min-width="140"
       show-overflow-tooltip
     />
 
     <el-table-column
       prop="product_code"
-      label="Product Code"
+      :label="$t('workOrder.productCode')"
       min-width="120"
       show-overflow-tooltip
     />
 
     <el-table-column
       prop="batch_number"
-      label="Batch Number"
+      :label="$t('workOrder.batchNumber')"
       min-width="120"
       show-overflow-tooltip
     />
 
     <el-table-column
       prop="planned_quantity"
-      label="Planned Qty"
+      :label="$t('workOrder.plannedQty')"
       width="110"
       align="right"
     >
@@ -43,7 +43,7 @@
 
     <el-table-column
       prop="actual_quantity"
-      label="Actual Qty"
+      :label="$t('workOrder.actualQty')"
       width="110"
       align="right"
     >
@@ -54,25 +54,25 @@
 
     <el-table-column
       prop="production_line"
-      label="Production Line"
+      :label="$t('workOrder.productionLine')"
       min-width="130"
     />
 
     <el-table-column
       prop="equipment"
-      label="Equipment"
+      :label="$t('menu.equipment')"
       min-width="120"
     />
 
     <el-table-column
       prop="operator"
-      label="Operator"
+      :label="$t('workOrder.operator')"
       width="100"
     />
 
     <el-table-column
       prop="status"
-      label="Status"
+      :label="$t('common.status')"
       width="120"
       align="center"
     >
@@ -85,7 +85,7 @@
 
     <el-table-column
       prop="created_at"
-      label="Created At"
+      :label="$t('workOrder.createdAt')"
       width="160"
       show-overflow-tooltip
     >
@@ -95,7 +95,7 @@
     </el-table-column>
 
     <el-table-column
-      label="Actions"
+      :label="$t('common.actions')"
       width="180"
       align="center"
       fixed="right"
@@ -108,7 +108,7 @@
           @click="handleView(row)"
         >
           <el-icon><View /></el-icon>
-          View
+          {{ $t('common.view') }}
         </el-button>
         <el-button
           type="primary"
@@ -117,7 +117,7 @@
           @click="handleEdit(row)"
         >
           <el-icon><Edit /></el-icon>
-          Edit
+          {{ $t('common.edit') }}
         </el-button>
         <el-button
           type="danger"
@@ -126,19 +126,22 @@
           @click="handleDelete(row)"
         >
           <el-icon><Delete /></el-icon>
-          Delete
+          {{ $t('common.delete') }}
         </el-button>
       </template>
     </el-table-column>
 
     <template #empty>
-      <el-empty description="No work orders found" />
+      <el-empty :description="$t('workOrder.noWorkOrdersFound')" />
     </template>
   </el-table>
 </template>
 
 <script setup>
+import { useI18n } from 'vue-i18n'
 import { View, Edit, Delete } from '@element-plus/icons-vue'
+
+const { t, locale } = useI18n()
 
 // Props
 defineProps({
@@ -169,10 +172,10 @@ const getStatusType = (status) => {
 // 获取状态文本
 const getStatusText = (status) => {
   const statusTextMap = {
-    pending: 'Pending',
-    in_progress: 'In Progress',
-    completed: 'Completed',
-    exception: 'Exception'
+    pending: t('workOrder.status.pending'),
+    in_progress: t('workOrder.status.inProgress'),
+    completed: t('workOrder.status.completed'),
+    exception: t('workOrder.status.exception')
   }
   return statusTextMap[status] || status
 }
@@ -186,7 +189,8 @@ const formatNumber = (value) => {
 // 格式化日期时间
 const formatDateTime = (dateTime) => {
   if (!dateTime) return '-'
-  return new Date(dateTime).toLocaleString('en-US', {
+  const localeStr = locale.value === 'zh-CN' ? 'zh-CN' : 'en-US'
+  return new Date(dateTime).toLocaleString(localeStr, {
     year: 'numeric',
     month: '2-digit',
     day: '2-digit',

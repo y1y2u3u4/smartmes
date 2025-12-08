@@ -3,17 +3,17 @@
     <!-- 页面头部 -->
     <div class="page-header">
       <div>
-        <h2 class="page-title">Work Order Detail</h2>
+        <h2 class="page-title">{{ $t('workOrder.detail') }}</h2>
         <p class="work-order-number">{{ workOrder.work_order_number }}</p>
       </div>
       <div class="header-actions">
         <el-button @click="handleBack">
           <el-icon><Back /></el-icon>
-          Back
+          {{ $t('common.back') }}
         </el-button>
         <el-button type="primary" @click="handleEdit">
           <el-icon><Edit /></el-icon>
-          Edit
+          {{ $t('common.edit') }}
         </el-button>
       </div>
     </div>
@@ -21,32 +21,32 @@
     <el-card v-loading="loading" shadow="never">
       <!-- 基本信息 -->
       <div class="section">
-        <h3 class="section-title">Basic Information</h3>
+        <h3 class="section-title">{{ $t('workOrder.basicInformation') }}</h3>
         <el-descriptions :column="2" border>
-          <el-descriptions-item label="Work Order No.">
+          <el-descriptions-item :label="$t('workOrder.workOrderNo')">
             {{ workOrder.work_order_number }}
           </el-descriptions-item>
-          <el-descriptions-item label="Status">
+          <el-descriptions-item :label="$t('common.status')">
             <el-tag :type="getStatusType(workOrder.status)">
               {{ getStatusText(workOrder.status) }}
             </el-tag>
           </el-descriptions-item>
-          <el-descriptions-item label="Product Code">
+          <el-descriptions-item :label="$t('workOrder.productCode')">
             {{ workOrder.product_code }}
           </el-descriptions-item>
-          <el-descriptions-item label="Batch Number">
+          <el-descriptions-item :label="$t('workOrder.batchNumber')">
             {{ workOrder.batch_number }}
           </el-descriptions-item>
-          <el-descriptions-item label="Production Line">
+          <el-descriptions-item :label="$t('workOrder.productionLine')">
             {{ workOrder.production_line }}
           </el-descriptions-item>
-          <el-descriptions-item label="Equipment">
+          <el-descriptions-item :label="$t('menu.equipment')">
             {{ workOrder.equipment }}
           </el-descriptions-item>
-          <el-descriptions-item label="Operator">
+          <el-descriptions-item :label="$t('workOrder.operator')">
             {{ workOrder.operator }}
           </el-descriptions-item>
-          <el-descriptions-item label="Scheduled Start">
+          <el-descriptions-item :label="$t('workOrder.scheduledStart')">
             {{ formatDateTime(workOrder.scheduled_start) }}
           </el-descriptions-item>
         </el-descriptions>
@@ -54,15 +54,15 @@
 
       <!-- 数量信息 -->
       <div class="section">
-        <h3 class="section-title">Quantity Information</h3>
+        <h3 class="section-title">{{ $t('workOrder.quantityInformation') }}</h3>
         <el-descriptions :column="2" border>
-          <el-descriptions-item label="Planned Quantity">
+          <el-descriptions-item :label="$t('workOrder.plannedQty')">
             {{ workOrder.planned_quantity }}
           </el-descriptions-item>
-          <el-descriptions-item label="Actual Quantity">
+          <el-descriptions-item :label="$t('workOrder.actualQty')">
             {{ workOrder.actual_quantity || '-' }}
           </el-descriptions-item>
-          <el-descriptions-item label="Completion Rate">
+          <el-descriptions-item :label="$t('workOrder.completionRate')">
             <el-progress
               v-if="workOrder.actual_quantity"
               :percentage="getCompletionRate()"
@@ -70,7 +70,7 @@
             />
             <span v-else>-</span>
           </el-descriptions-item>
-          <el-descriptions-item label="Defect Quantity">
+          <el-descriptions-item :label="$t('workOrder.defectQuantity')">
             {{ workOrder.defect_quantity || 0 }}
           </el-descriptions-item>
         </el-descriptions>
@@ -78,18 +78,18 @@
 
       <!-- 时间信息 -->
       <div class="section">
-        <h3 class="section-title">Time Information</h3>
+        <h3 class="section-title">{{ $t('workOrder.timeInformation') }}</h3>
         <el-descriptions :column="2" border>
-          <el-descriptions-item label="Actual Start">
+          <el-descriptions-item :label="$t('workOrder.actualStart')">
             {{ formatDateTime(workOrder.actual_start) || '-' }}
           </el-descriptions-item>
-          <el-descriptions-item label="Actual End">
+          <el-descriptions-item :label="$t('workOrder.actualEnd')">
             {{ formatDateTime(workOrder.actual_end) || '-' }}
           </el-descriptions-item>
-          <el-descriptions-item label="Created At">
+          <el-descriptions-item :label="$t('workOrder.createdAt')">
             {{ formatDateTime(workOrder.created_at) }}
           </el-descriptions-item>
-          <el-descriptions-item label="Updated At">
+          <el-descriptions-item :label="$t('workOrder.updatedAt')">
             {{ formatDateTime(workOrder.updated_at) }}
           </el-descriptions-item>
         </el-descriptions>
@@ -97,7 +97,7 @@
 
       <!-- 备注 -->
       <div v-if="workOrder.notes" class="section">
-        <h3 class="section-title">Notes</h3>
+        <h3 class="section-title">{{ $t('workOrder.notes') }}</h3>
         <p class="notes-content">{{ workOrder.notes }}</p>
       </div>
 
@@ -108,21 +108,21 @@
           type="success"
           @click="handleStart"
         >
-          Start Production
+          {{ $t('workOrder.startProduction') }}
         </el-button>
         <el-button
           v-if="workOrder.status === 'in_progress'"
           type="primary"
           @click="handleComplete"
         >
-          Complete Production
+          {{ $t('workOrder.completeProduction') }}
         </el-button>
         <el-button
           v-if="workOrder.status !== 'completed'"
           type="warning"
           @click="handleException"
         >
-          Report Exception
+          {{ $t('workOrder.reportException') }}
         </el-button>
       </div>
     </el-card>
@@ -132,12 +132,14 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
+import { useI18n } from 'vue-i18n'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { Back, Edit } from '@element-plus/icons-vue'
 import { getWorkOrderDetail, startWorkOrder, completeWorkOrder } from '@/api/workorder'
 
 const router = useRouter()
 const route = useRoute()
+const { t, locale } = useI18n()
 
 // 工单详情
 const workOrder = ref({})
@@ -151,7 +153,7 @@ const fetchWorkOrderDetail = async () => {
     workOrder.value = response.data || {}
   } catch (error) {
     console.error('Failed to fetch work order detail:', error)
-    ElMessage.error('Failed to load work order details')
+    ElMessage.error(t('workOrder.failedToLoadDetail'))
   } finally {
     loading.value = false
   }
@@ -171,10 +173,10 @@ const getStatusType = (status) => {
 // 获取状态文本
 const getStatusText = (status) => {
   const statusMap = {
-    pending: 'Pending',
-    in_progress: 'In Progress',
-    completed: 'Completed',
-    exception: 'Exception'
+    pending: t('workOrder.status.pending'),
+    in_progress: t('workOrder.status.inProgress'),
+    completed: t('workOrder.status.completed'),
+    exception: t('workOrder.status.exception')
   }
   return statusMap[status] || status
 }
@@ -182,7 +184,8 @@ const getStatusText = (status) => {
 // 格式化日期时间
 const formatDateTime = (dateTime) => {
   if (!dateTime) return '-'
-  return new Date(dateTime).toLocaleString('en-US', {
+  const localeStr = locale.value === 'zh-CN' ? 'zh-CN' : 'en-US'
+  return new Date(dateTime).toLocaleString(localeStr, {
     year: 'numeric',
     month: '2-digit',
     day: '2-digit',
@@ -224,11 +227,11 @@ const handleEdit = () => {
 const handleStart = async () => {
   try {
     await startWorkOrder(workOrder.value.id)
-    ElMessage.success('Production started successfully')
+    ElMessage.success(t('workOrder.productionStarted'))
     fetchWorkOrderDetail()
   } catch (error) {
     console.error('Failed to start production:', error)
-    ElMessage.error('Failed to start production')
+    ElMessage.error(t('workOrder.failedToStart'))
   }
 }
 
@@ -236,32 +239,32 @@ const handleStart = async () => {
 const handleComplete = async () => {
   try {
     const { value: actualQuantity } = await ElMessageBox.prompt(
-      'Please enter actual quantity produced',
-      'Complete Production',
+      t('workOrder.enterActualQuantity'),
+      t('workOrder.completeProduction'),
       {
-        confirmButtonText: 'Complete',
-        cancelButtonText: 'Cancel',
+        confirmButtonText: t('common.confirm'),
+        cancelButtonText: t('common.cancel'),
         inputPattern: /^\d+$/,
-        inputErrorMessage: 'Please enter a valid number'
+        inputErrorMessage: t('workOrder.enterValidNumber')
       }
     )
 
     await completeWorkOrder(workOrder.value.id, {
       actual_quantity: parseInt(actualQuantity)
     })
-    ElMessage.success('Production completed successfully')
+    ElMessage.success(t('workOrder.productionCompleted'))
     fetchWorkOrderDetail()
   } catch (error) {
     if (error !== 'cancel') {
       console.error('Failed to complete production:', error)
-      ElMessage.error('Failed to complete production')
+      ElMessage.error(t('workOrder.failedToComplete'))
     }
   }
 }
 
 // 报告异常
 const handleException = () => {
-  ElMessage.info('Exception reporting feature coming soon')
+  ElMessage.info(t('workOrder.exceptionFeatureComingSoon'))
 }
 
 // 页面加载时

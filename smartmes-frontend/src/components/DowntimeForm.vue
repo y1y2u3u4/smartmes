@@ -1,9 +1,9 @@
 <template>
   <div class="downtime-form">
     <el-steps :active="currentStep" finish-status="success" align-center>
-      <el-step title="Select Equipment" />
-      <el-step title="Exception Type" />
-      <el-step title="Description & Photo" />
+      <el-step :title="$t('downtime.selectEquipment')" />
+      <el-step :title="$t('downtime.exceptionType')" />
+      <el-step :title="$t('downtime.descriptionAndPhoto')" />
     </el-steps>
 
     <el-form
@@ -15,10 +15,10 @@
     >
       <!-- Step 1: Select Equipment -->
       <div v-show="currentStep === 0" class="step-container">
-        <el-form-item label="Equipment" prop="equipmentId">
+        <el-form-item :label="$t('downtime.equipment')" prop="equipmentId">
           <el-select
             v-model="formData.equipmentId"
-            placeholder="Please select equipment"
+            :placeholder="$t('downtime.pleaseSelectEquipment')"
             filterable
             size="large"
             style="width: 100%"
@@ -40,31 +40,31 @@
 
       <!-- Step 2: Exception Type -->
       <div v-show="currentStep === 1" class="step-container">
-        <el-form-item label="Exception Type" prop="exceptionType">
+        <el-form-item :label="$t('downtime.exceptionType')" prop="exceptionType">
           <el-radio-group v-model="formData.exceptionType" size="large">
-            <el-radio-button label="equipment_failure">Equipment Failure</el-radio-button>
-            <el-radio-button label="material_shortage">Material Shortage</el-radio-button>
-            <el-radio-button label="quality_issue">Quality Issue</el-radio-button>
-            <el-radio-button label="human_error">Human Error</el-radio-button>
-            <el-radio-button label="other">Other</el-radio-button>
+            <el-radio-button label="equipment_failure">{{ $t('downtime.exceptionTypes.equipmentFailure') }}</el-radio-button>
+            <el-radio-button label="material_shortage">{{ $t('downtime.exceptionTypes.materialShortage') }}</el-radio-button>
+            <el-radio-button label="quality_issue">{{ $t('downtime.exceptionTypes.qualityIssue') }}</el-radio-button>
+            <el-radio-button label="human_error">{{ $t('downtime.exceptionTypes.humanError') }}</el-radio-button>
+            <el-radio-button label="other">{{ $t('downtime.exceptionTypes.other') }}</el-radio-button>
           </el-radio-group>
         </el-form-item>
       </div>
 
       <!-- Step 3: Description & Photo -->
       <div v-show="currentStep === 2" class="step-container">
-        <el-form-item label="Description" prop="description">
+        <el-form-item :label="$t('downtime.description')" prop="description">
           <el-input
             v-model="formData.description"
             type="textarea"
             :rows="6"
-            placeholder="Please describe the exception in detail (max 500 characters)"
+            :placeholder="$t('downtime.enterDescription')"
             maxlength="500"
             show-word-limit
           />
         </el-form-item>
 
-        <el-form-item label="Photo (Optional)">
+        <el-form-item :label="$t('downtime.photoOptional')">
           <el-upload
             ref="uploadRef"
             :file-list="fileList"
@@ -79,7 +79,7 @@
             <el-icon><Plus /></el-icon>
             <template #tip>
               <div class="el-upload__tip">
-                Support JPG/PNG format, max 5MB per file, up to 3 photos
+                {{ $t('downtime.uploadTip') }}
               </div>
             </template>
           </el-upload>
@@ -94,7 +94,7 @@
         size="large"
         @click="prevStep"
       >
-        Previous
+        {{ $t('common.previous') }}
       </el-button>
       <el-button
         v-if="currentStep < 2"
@@ -102,7 +102,7 @@
         size="large"
         @click="nextStep"
       >
-        Next
+        {{ $t('common.next') }}
       </el-button>
       <el-button
         v-if="currentStep === 2"
@@ -111,17 +111,20 @@
         :loading="submitting"
         @click="handleSubmit"
       >
-        Submit Report
+        {{ $t('downtime.submitReport') }}
       </el-button>
     </div>
   </div>
 </template>
 
 <script setup>
-import { ref, reactive, onMounted } from 'vue'
+import { ref, reactive, onMounted, computed } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { ElMessage } from 'element-plus'
 import { Plus } from '@element-plus/icons-vue'
 import { getEquipmentList, submitDowntimeReport, uploadImage } from '@/api/downtime'
+
+const { t } = useI18n()
 
 // 当前步骤
 const currentStep = ref(0)
@@ -150,18 +153,18 @@ const formData = reactive({
 })
 
 // 表单验证规则
-const rules = {
+const rules = computed(() => ({
   equipmentId: [
-    { required: true, message: 'Please select equipment', trigger: 'change' }
+    { required: true, message: t('downtime.pleaseSelectEquipment'), trigger: 'change' }
   ],
   exceptionType: [
-    { required: true, message: 'Please select exception type', trigger: 'change' }
+    { required: true, message: t('downtime.pleaseSelectExceptionType'), trigger: 'change' }
   ],
   description: [
-    { required: true, message: 'Please enter description', trigger: 'blur' },
-    { min: 10, max: 500, message: 'Description should be 10-500 characters', trigger: 'blur' }
+    { required: true, message: t('downtime.pleaseEnterDescription'), trigger: 'blur' },
+    { min: 10, max: 500, message: t('downtime.descriptionLength'), trigger: 'blur' }
   ]
-}
+}))
 
 // 加载设备列表
 const loadEquipmentList = async () => {
@@ -169,7 +172,7 @@ const loadEquipmentList = async () => {
     equipmentList.value = await getEquipmentList()
   } catch (error) {
     console.error('Failed to load equipment list:', error)
-    ElMessage.error('Failed to load equipment list')
+    ElMessage.error(t('downtime.failedToLoadEquipment'))
   }
 }
 
@@ -189,11 +192,11 @@ const beforeUpload = (file) => {
   const isLt5M = file.size / 1024 / 1024 < 5
 
   if (!isImage) {
-    ElMessage.error('Only image files are allowed!')
+    ElMessage.error(t('downtime.onlyImageAllowed'))
     return false
   }
   if (!isLt5M) {
-    ElMessage.error('Image size cannot exceed 5MB!')
+    ElMessage.error(t('downtime.imageSizeLimit'))
     return false
   }
   return true
@@ -225,14 +228,14 @@ const prevStep = () => {
 // 上传图片
 const uploadPhotos = async () => {
   const photos = []
-  
+
   for (const file of fileList.value) {
     if (file.raw) {
-      const formData = new FormData()
-      formData.append('file', file.raw)
-      
+      const formDataObj = new FormData()
+      formDataObj.append('file', file.raw)
+
       try {
-        const response = await uploadImage(formData)
+        const response = await uploadImage(formDataObj)
         photos.push(response.url)
       } catch (error) {
         console.error('Failed to upload photo:', error)
@@ -240,7 +243,7 @@ const uploadPhotos = async () => {
       }
     }
   }
-  
+
   return photos
 }
 
@@ -248,19 +251,19 @@ const uploadPhotos = async () => {
 const handleSubmit = async () => {
   try {
     await formRef.value.validate()
-    
+
     submitting.value = true
-    
+
     // 上传图片
     if (fileList.value.length > 0) {
       formData.photos = await uploadPhotos()
     }
-    
+
     // 提交表单
     await submitDowntimeReport(formData)
-    
-    ElMessage.success('Report submitted successfully!')
-    
+
+    ElMessage.success(t('downtime.reportSubmitted'))
+
     // 重置表单
     resetForm()
   } catch (error) {
@@ -269,7 +272,7 @@ const handleSubmit = async () => {
       // 验证失败
       return
     }
-    ElMessage.error('Failed to submit report')
+    ElMessage.error(t('downtime.failedToSubmitReport'))
   } finally {
     submitting.value = false
   }

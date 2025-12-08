@@ -2,56 +2,56 @@
   <div class="work-order-list">
     <!-- 页面标题和操作按钮 -->
     <div class="page-header">
-      <h2 class="page-title">Work Order Management</h2>
+      <h2 class="page-title">{{ $t('workOrder.management') }}</h2>
       <el-button type="primary" @click="handleCreate">
         <el-icon><Plus /></el-icon>
-        Create Work Order
+        {{ $t('workOrder.create') }}
       </el-button>
     </div>
 
     <!-- 搜索过滤区域 -->
     <el-card class="filter-card" shadow="never">
       <el-form :inline="true" :model="filterForm" class="filter-form">
-        <el-form-item label="Work Order No.">
+        <el-form-item :label="$t('workOrder.workOrderNo')">
           <el-input
             v-model="filterForm.workOrderNumber"
-            placeholder="Enter work order number"
+            :placeholder="$t('workOrder.enterWorkOrderNumber')"
             clearable
             @clear="handleSearch"
           />
         </el-form-item>
 
-        <el-form-item label="Batch Number">
+        <el-form-item :label="$t('workOrder.batchNumber')">
           <el-input
             v-model="filterForm.batchNumber"
-            placeholder="Enter batch number"
+            :placeholder="$t('workOrder.enterBatchNumber')"
             clearable
             @clear="handleSearch"
           />
         </el-form-item>
 
-        <el-form-item label="Status">
+        <el-form-item :label="$t('common.status')">
           <el-select
             v-model="filterForm.status"
-            placeholder="Select status"
+            :placeholder="$t('workOrder.selectStatus')"
             clearable
             @clear="handleSearch"
           >
-            <el-option label="Pending" value="pending" />
-            <el-option label="In Progress" value="in_progress" />
-            <el-option label="Completed" value="completed" />
-            <el-option label="Exception" value="exception" />
+            <el-option :label="$t('workOrder.status.pending')" value="pending" />
+            <el-option :label="$t('workOrder.status.inProgress')" value="in_progress" />
+            <el-option :label="$t('workOrder.status.completed')" value="completed" />
+            <el-option :label="$t('workOrder.status.exception')" value="exception" />
           </el-select>
         </el-form-item>
 
         <el-form-item>
           <el-button type="primary" @click="handleSearch">
             <el-icon><Search /></el-icon>
-            Search
+            {{ $t('common.search') }}
           </el-button>
           <el-button @click="handleReset">
             <el-icon><RefreshLeft /></el-icon>
-            Reset
+            {{ $t('common.reset') }}
           </el-button>
         </el-form-item>
       </el-form>
@@ -85,12 +85,14 @@
 <script setup>
 import { ref, reactive, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
+import { useI18n } from 'vue-i18n'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { Plus, Search, RefreshLeft } from '@element-plus/icons-vue'
 import WorkOrderTable from '@/components/WorkOrderTable.vue'
 import { getWorkOrderList, deleteWorkOrder } from '@/api/workorder'
 
 const router = useRouter()
+const { t } = useI18n()
 
 // 过滤表单
 const filterForm = reactive({
@@ -127,7 +129,7 @@ const fetchWorkOrders = async () => {
     pagination.total = response.total || 0
   } catch (error) {
     console.error('Failed to fetch work orders:', error)
-    ElMessage.error('Failed to load work orders')
+    ElMessage.error(t('workOrder.failedToLoad'))
   } finally {
     loading.value = false
   }
@@ -169,22 +171,22 @@ const handleEdit = (row) => {
 const handleDelete = async (row) => {
   try {
     await ElMessageBox.confirm(
-      `Are you sure you want to delete work order "${row.work_order_number}"?`,
-      'Delete Confirmation',
+      t('workOrder.deleteConfirmMessage', { workOrderNo: row.work_order_number }),
+      t('workOrder.deleteConfirmTitle'),
       {
-        confirmButtonText: 'Delete',
-        cancelButtonText: 'Cancel',
+        confirmButtonText: t('common.delete'),
+        cancelButtonText: t('common.cancel'),
         type: 'warning'
       }
     )
 
     await deleteWorkOrder(row.id)
-    ElMessage.success('Work order deleted successfully')
+    ElMessage.success(t('workOrder.deletedSuccessfully'))
     fetchWorkOrders()
   } catch (error) {
     if (error !== 'cancel') {
       console.error('Failed to delete work order:', error)
-      ElMessage.error('Failed to delete work order')
+      ElMessage.error(t('workOrder.failedToDelete'))
     }
   }
 }

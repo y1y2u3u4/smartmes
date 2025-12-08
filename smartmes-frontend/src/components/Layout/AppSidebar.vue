@@ -18,40 +18,40 @@
     >
       <el-menu-item index="/workorders">
         <el-icon><Document /></el-icon>
-        <template #title>Work Orders</template>
+        <template #title>{{ $t('menu.workOrders') }}</template>
       </el-menu-item>
 
       <el-menu-item index="/dashboard">
         <el-icon><DataLine /></el-icon>
-        <template #title>Dashboard</template>
+        <template #title>{{ $t('menu.dashboard') }}</template>
       </el-menu-item>
 
       <el-sub-menu index="/production">
         <template #title>
           <el-icon><Setting /></el-icon>
-          <span>Production</span>
+          <span>{{ $t('menu.production') }}</span>
         </template>
-        <el-menu-item index="/production/lines">Production Lines</el-menu-item>
-        <el-menu-item index="/production/equipment">Equipment</el-menu-item>
+        <el-menu-item index="/production/lines">{{ $t('menu.productionLines') }}</el-menu-item>
+        <el-menu-item index="/production/equipment">{{ $t('menu.equipment') }}</el-menu-item>
       </el-sub-menu>
 
       <el-sub-menu index="/quality">
         <template #title>
           <el-icon><Check /></el-icon>
-          <span>Quality</span>
+          <span>{{ $t('menu.quality') }}</span>
         </template>
-        <el-menu-item index="/quality/inspection">Inspection</el-menu-item>
-        <el-menu-item index="/quality/defects">Defects</el-menu-item>
+        <el-menu-item index="/quality/inspection">{{ $t('menu.inspection') }}</el-menu-item>
+        <el-menu-item index="/quality/defects">{{ $t('menu.defects') }}</el-menu-item>
       </el-sub-menu>
 
       <el-menu-item index="/reports">
         <el-icon><TrendCharts /></el-icon>
-        <template #title>Reports</template>
+        <template #title>{{ $t('menu.reports') }}</template>
       </el-menu-item>
 
       <el-menu-item index="/settings">
         <el-icon><Tools /></el-icon>
-        <template #title>Settings</template>
+        <template #title>{{ $t('menu.settings') }}</template>
       </el-menu-item>
     </el-menu>
   </div>

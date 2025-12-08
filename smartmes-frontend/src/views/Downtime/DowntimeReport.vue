@@ -3,9 +3,9 @@
     <el-card class="page-card">
       <template #header>
         <div class="card-header">
-          <h2>Downtime Exception Report</h2>
+          <h2>{{ $t('downtime.exceptionReport') }}</h2>
           <el-button type="primary" @click="goToList">
-            View Exception List
+            {{ $t('downtime.viewExceptionList') }}
           </el-button>
         </div>
       </template>
@@ -16,20 +16,20 @@
     <!-- Help Tips -->
     <el-card class="tips-card" shadow="never">
       <template #header>
-        <h3>Reporting Instructions</h3>
+        <h3>{{ $t('downtime.reportingInstructions') }}</h3>
       </template>
       <el-alert
-        title="Quick Reporting Tips"
+        :title="$t('downtime.quickReportingTips')"
         type="info"
         :closable="false"
         show-icon
       >
         <ul class="tips-list">
-          <li>Select the equipment experiencing the exception</li>
-          <li>Choose the appropriate exception type</li>
-          <li>Provide a detailed description (at least 10 characters)</li>
-          <li>Optional: Upload photos to help with troubleshooting</li>
-          <li>Submit the report and the maintenance team will be notified immediately</li>
+          <li>{{ $t('downtime.tip1') }}</li>
+          <li>{{ $t('downtime.tip2') }}</li>
+          <li>{{ $t('downtime.tip3') }}</li>
+          <li>{{ $t('downtime.tip4') }}</li>
+          <li>{{ $t('downtime.tip5') }}</li>
         </ul>
       </el-alert>
     </el-card>

@@ -10,11 +10,11 @@
           :loading="loading"
           @click="handleRefresh"
         >
-          Refresh
+          {{ $t('common.refresh') }}
         </el-button>
       </div>
     </template>
-    
+
     <div
       v-loading="loading"
       :style="{ height: height + 'px' }"
@@ -68,15 +68,15 @@ let chartInstance = null
 // 初始化图表
 const initChart = () => {
   if (!chartRef.value) return
-  
+
   // 如果已存在实例，先销毁
   if (chartInstance) {
     chartInstance.dispose()
   }
-  
+
   // 创建新实例
   chartInstance = echarts.init(chartRef.value)
-  
+
   // 设置配置
   if (props.option) {
     chartInstance.setOption(props.option)
@@ -118,10 +118,10 @@ let resizeObserver = null
 
 onMounted(() => {
   initChart()
-  
+
   // 监听窗口大小变化
   window.addEventListener('resize', resizeChart)
-  
+
   // 使用 ResizeObserver 监听容器大小变化
   if (chartRef.value) {
     resizeObserver = new ResizeObserver(() => {
@@ -134,12 +134,12 @@ onMounted(() => {
 onUnmounted(() => {
   // 移除事件监听
   window.removeEventListener('resize', resizeChart)
-  
+
   // 断开 ResizeObserver
   if (resizeObserver) {
     resizeObserver.disconnect()
   }
-  
+
   // 销毁图表实例
   if (chartInstance) {
     chartInstance.dispose()

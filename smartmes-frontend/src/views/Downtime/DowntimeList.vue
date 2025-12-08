@@ -3,19 +3,19 @@
     <el-card>
       <template #header>
         <div class="card-header">
-          <h2>Downtime Exception List</h2>
+          <h2>{{ $t('downtime.exceptionList') }}</h2>
           <el-button type="primary" @click="goToReport">
-            New Report
+            {{ $t('downtime.newReport') }}
           </el-button>
         </div>
       </template>
 
       <!-- Filter Area -->
       <el-form :inline="true" :model="filterForm" class="filter-form">
-        <el-form-item label="Equipment">
+        <el-form-item :label="$t('downtime.equipment')">
           <el-select
             v-model="filterForm.equipmentId"
-            placeholder="All Equipment"
+            :placeholder="$t('downtime.allEquipment')"
             clearable
             style="width: 200px"
           >
@@ -28,37 +28,37 @@
           </el-select>
         </el-form-item>
 
-        <el-form-item label="Exception Type">
+        <el-form-item :label="$t('downtime.exceptionType')">
           <el-select
             v-model="filterForm.exceptionType"
-            placeholder="All Types"
+            :placeholder="$t('downtime.allTypes')"
             clearable
             style="width: 200px"
           >
-            <el-option label="Equipment Failure" value="equipment_failure" />
-            <el-option label="Material Shortage" value="material_shortage" />
-            <el-option label="Quality Issue" value="quality_issue" />
-            <el-option label="Human Error" value="human_error" />
-            <el-option label="Other" value="other" />
+            <el-option :label="$t('downtime.exceptionTypes.equipmentFailure')" value="equipment_failure" />
+            <el-option :label="$t('downtime.exceptionTypes.materialShortage')" value="material_shortage" />
+            <el-option :label="$t('downtime.exceptionTypes.qualityIssue')" value="quality_issue" />
+            <el-option :label="$t('downtime.exceptionTypes.humanError')" value="human_error" />
+            <el-option :label="$t('downtime.exceptionTypes.other')" value="other" />
           </el-select>
         </el-form-item>
 
-        <el-form-item label="Status">
+        <el-form-item :label="$t('common.status')">
           <el-select
             v-model="filterForm.status"
-            placeholder="All Status"
+            :placeholder="$t('downtime.allStatus')"
             clearable
             style="width: 150px"
           >
-            <el-option label="Pending" value="pending" />
-            <el-option label="In Progress" value="in_progress" />
-            <el-option label="Resolved" value="resolved" />
+            <el-option :label="$t('downtime.status.pending')" value="pending" />
+            <el-option :label="$t('downtime.status.inProgress')" value="in_progress" />
+            <el-option :label="$t('downtime.status.resolved')" value="resolved" />
           </el-select>
         </el-form-item>
 
         <el-form-item>
-          <el-button type="primary" @click="handleSearch">Search</el-button>
-          <el-button @click="handleReset">Reset</el-button>
+          <el-button type="primary" @click="handleSearch">{{ $t('common.search') }}</el-button>
+          <el-button @click="handleReset">{{ $t('common.reset') }}</el-button>
         </el-form-item>
       </el-form>
 
@@ -77,16 +77,16 @@
           width="80"
           align="center"
         />
-        
+
         <el-table-column
           prop="equipmentName"
-          label="Equipment"
+          :label="$t('downtime.equipment')"
           width="150"
         />
-        
+
         <el-table-column
           prop="exceptionType"
-          label="Exception Type"
+          :label="$t('downtime.exceptionType')"
           width="140"
         >
           <template #default="{ row }">
@@ -98,14 +98,14 @@
 
         <el-table-column
           prop="description"
-          label="Description"
+          :label="$t('downtime.description')"
           min-width="200"
           show-overflow-tooltip
         />
 
         <el-table-column
           prop="status"
-          label="Status"
+          :label="$t('common.status')"
           width="110"
           align="center"
         >
@@ -118,7 +118,7 @@
 
         <el-table-column
           prop="downtimeDuration"
-          label="Downtime"
+          :label="$t('downtime.downtime')"
           width="120"
           align="center"
         >
@@ -131,13 +131,13 @@
 
         <el-table-column
           prop="reportedBy"
-          label="Reporter"
+          :label="$t('downtime.reporter')"
           width="100"
         />
 
         <el-table-column
           prop="createdAt"
-          label="Report Time"
+          :label="$t('downtime.reportTime')"
           width="160"
           sortable
         >
@@ -147,7 +147,7 @@
         </el-table-column>
 
         <el-table-column
-          label="Actions"
+          :label="$t('common.actions')"
           width="200"
           align="center"
           fixed="right"
@@ -159,7 +159,7 @@
               size="small"
               @click="handleRespond(row)"
             >
-              Respond
+              {{ $t('downtime.respond') }}
             </el-button>
             <el-button
               v-if="row.status === 'in_progress'"
@@ -167,14 +167,14 @@
               size="small"
               @click="handleResolve(row)"
             >
-              Resolve
+              {{ $t('downtime.resolve') }}
             </el-button>
             <el-button
               type="info"
               size="small"
               @click="handleViewDetail(row)"
             >
-              Details
+              {{ $t('common.details') }}
             </el-button>
           </template>
         </el-table-column>
@@ -197,44 +197,44 @@
     <!-- Respond Dialog -->
     <el-dialog
       v-model="respondDialogVisible"
-      title="Respond to Exception"
+      :title="$t('downtime.respondToException')"
       width="500px"
     >
       <el-form :model="respondForm" label-width="100px">
-        <el-form-item label="Response">
+        <el-form-item :label="$t('downtime.response')">
           <el-input
             v-model="respondForm.response"
             type="textarea"
             :rows="4"
-            placeholder="Enter your response..."
+            :placeholder="$t('downtime.enterResponse')"
           />
         </el-form-item>
       </el-form>
       <template #footer>
-        <el-button @click="respondDialogVisible = false">Cancel</el-button>
-        <el-button type="primary" @click="submitRespond">Confirm</el-button>
+        <el-button @click="respondDialogVisible = false">{{ $t('common.cancel') }}</el-button>
+        <el-button type="primary" @click="submitRespond">{{ $t('common.confirm') }}</el-button>
       </template>
     </el-dialog>
 
     <!-- Resolve Dialog -->
     <el-dialog
       v-model="resolveDialogVisible"
-      title="Resolve Exception"
+      :title="$t('downtime.resolveException')"
       width="500px"
     >
       <el-form :model="resolveForm" label-width="100px">
-        <el-form-item label="Solution">
+        <el-form-item :label="$t('downtime.solution')">
           <el-input
             v-model="resolveForm.solution"
             type="textarea"
             :rows="4"
-            placeholder="Describe the solution..."
+            :placeholder="$t('downtime.describeSolution')"
           />
         </el-form-item>
       </el-form>
       <template #footer>
-        <el-button @click="resolveDialogVisible = false">Cancel</el-button>
-        <el-button type="primary" @click="submitResolve">Confirm</el-button>
+        <el-button @click="resolveDialogVisible = false">{{ $t('common.cancel') }}</el-button>
+        <el-button type="primary" @click="submitResolve">{{ $t('common.confirm') }}</el-button>
       </template>
     </el-dialog>
   </div>
@@ -243,6 +243,7 @@
 <script setup>
 import { ref, reactive, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
+import { useI18n } from 'vue-i18n'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import {
   getDowntimeList,
@@ -252,6 +253,7 @@ import {
 } from '@/api/downtime'
 
 const router = useRouter()
+const { t, locale } = useI18n()
 
 // 数据加载状态
 const loading = ref(false)
@@ -305,11 +307,11 @@ const getTypeTagType = (type) => {
 // 获取异常类型标签文本
 const getTypeLabel = (type) => {
   const typeMap = {
-    equipment_failure: 'Equipment Failure',
-    material_shortage: 'Material Shortage',
-    quality_issue: 'Quality Issue',
-    human_error: 'Human Error',
-    other: 'Other'
+    equipment_failure: t('downtime.exceptionTypes.equipmentFailure'),
+    material_shortage: t('downtime.exceptionTypes.materialShortage'),
+    quality_issue: t('downtime.exceptionTypes.qualityIssue'),
+    human_error: t('downtime.exceptionTypes.humanError'),
+    other: t('downtime.exceptionTypes.other')
   }
   return typeMap[type] || type
 }
@@ -327,9 +329,9 @@ const getStatusTagType = (status) => {
 // 获取状态标签文本
 const getStatusLabel = (status) => {
   const statusMap = {
-    pending: 'Pending',
-    in_progress: 'In Progress',
-    resolved: 'Resolved'
+    pending: t('downtime.status.pending'),
+    in_progress: t('downtime.status.inProgress'),
+    resolved: t('downtime.status.resolved')
   }
   return statusMap[status] || status
 }
@@ -349,7 +351,8 @@ const formatDuration = (minutes) => {
 const formatDateTime = (dateTime) => {
   if (!dateTime) return '-'
   const date = new Date(dateTime)
-  return date.toLocaleString('zh-CN', { hour12: false })
+  const localeStr = locale.value === 'zh-CN' ? 'zh-CN' : 'en-US'
+  return date.toLocaleString(localeStr, { hour12: false })
 }
 
 // 加载设备列表
@@ -370,13 +373,13 @@ const loadDowntimeList = async () => {
       pageSize: pagination.pageSize,
       ...filterForm
     }
-    
+
     const response = await getDowntimeList(params)
     tableData.value = response.list
     pagination.total = response.total
   } catch (error) {
     console.error('Failed to load downtime list:', error)
-    ElMessage.error('Failed to load data')
+    ElMessage.error(t('downtime.failedToLoad'))
   } finally {
     loading.value = false
   }
@@ -416,7 +419,7 @@ const handleRespond = (row) => {
 // 提交响应
 const submitRespond = async () => {
   if (!respondForm.response) {
-    ElMessage.warning('Please enter your response')
+    ElMessage.warning(t('downtime.pleaseEnterResponse'))
     return
   }
 
@@ -424,12 +427,12 @@ const submitRespond = async () => {
     await respondDowntime(respondForm.id, {
       response: respondForm.response
     })
-    ElMessage.success('Response submitted successfully')
+    ElMessage.success(t('downtime.responseSubmitted'))
     respondDialogVisible.value = false
     loadDowntimeList()
   } catch (error) {
     console.error('Failed to submit response:', error)
-    ElMessage.error('Failed to submit response')
+    ElMessage.error(t('downtime.failedToSubmitResponse'))
   }
 }
 
@@ -443,7 +446,7 @@ const handleResolve = (row) => {
 // 提交解决方案
 const submitResolve = async () => {
   if (!resolveForm.solution) {
-    ElMessage.warning('Please describe the solution')
+    ElMessage.warning(t('downtime.pleaseDescribeSolution'))
     return
   }
 
@@ -451,12 +454,12 @@ const submitResolve = async () => {
     await resolveDowntime(resolveForm.id, {
       solution: resolveForm.solution
     })
-    ElMessage.success('Exception resolved successfully')
+    ElMessage.success(t('downtime.exceptionResolved'))
     resolveDialogVisible.value = false
     loadDowntimeList()
   } catch (error) {
     console.error('Failed to resolve exception:', error)
-    ElMessage.error('Failed to resolve exception')
+    ElMessage.error(t('downtime.failedToResolve'))
   }
 }
 
@@ -465,21 +468,21 @@ const handleViewDetail = (row) => {
   ElMessageBox.alert(
     `
       <div style="line-height: 1.8;">
-        <p><strong>Equipment:</strong> ${row.equipmentName}</p>
-        <p><strong>Type:</strong> ${getTypeLabel(row.exceptionType)}</p>
-        <p><strong>Description:</strong> ${row.description}</p>
-        <p><strong>Reporter:</strong> ${row.reportedBy}</p>
-        <p><strong>Report Time:</strong> ${formatDateTime(row.createdAt)}</p>
-        ${row.respondedAt ? `<p><strong>Response Time:</strong> ${formatDateTime(row.respondedAt)}</p>` : ''}
-        ${row.response ? `<p><strong>Response:</strong> ${row.response}</p>` : ''}
-        ${row.resolvedAt ? `<p><strong>Resolve Time:</strong> ${formatDateTime(row.resolvedAt)}</p>` : ''}
-        ${row.solution ? `<p><strong>Solution:</strong> ${row.solution}</p>` : ''}
+        <p><strong>${t('downtime.equipment')}:</strong> ${row.equipmentName}</p>
+        <p><strong>${t('downtime.exceptionType')}:</strong> ${getTypeLabel(row.exceptionType)}</p>
+        <p><strong>${t('downtime.description')}:</strong> ${row.description}</p>
+        <p><strong>${t('downtime.reporter')}:</strong> ${row.reportedBy}</p>
+        <p><strong>${t('downtime.reportTime')}:</strong> ${formatDateTime(row.createdAt)}</p>
+        ${row.respondedAt ? `<p><strong>${t('downtime.responseTime')}:</strong> ${formatDateTime(row.respondedAt)}</p>` : ''}
+        ${row.response ? `<p><strong>${t('downtime.response')}:</strong> ${row.response}</p>` : ''}
+        ${row.resolvedAt ? `<p><strong>${t('downtime.resolveTime')}:</strong> ${formatDateTime(row.resolvedAt)}</p>` : ''}
+        ${row.solution ? `<p><strong>${t('downtime.solution')}:</strong> ${row.solution}</p>` : ''}
       </div>
     `,
-    'Exception Details',
+    t('downtime.exceptionDetails'),
     {
       dangerouslyUseHTMLString: true,
-      confirmButtonText: 'Close'
+      confirmButtonText: t('common.close')
     }
   )
 }

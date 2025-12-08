@@ -2,16 +2,16 @@
   <div class="production-dashboard">
     <!-- Page Header -->
     <div class="dashboard-header">
-      <h1>Production Dashboard</h1>
+      <h1>{{ $t('dashboard.title') }}</h1>
       <div class="header-actions">
-        <el-tag type="info">Auto-refresh: 30s</el-tag>
+        <el-tag type="info">{{ $t('common.autoRefresh') }}</el-tag>
         <el-button
           type="primary"
           :icon="Refresh"
           :loading="refreshing"
           @click="handleManualRefresh"
         >
-          Refresh
+          {{ $t('common.refresh') }}
         </el-button>
       </div>
     </div>
@@ -20,7 +20,7 @@
     <el-row :gutter="20" class="stats-row">
       <el-col :xs="24" :sm="12" :md="6">
         <StatCard
-          label="Total Work Orders Today"
+          :label="$t('dashboard.totalWorkOrdersToday')"
           :value="stats.totalOrders"
           :icon="Document"
           icon-color="#409EFF"
@@ -30,7 +30,7 @@
       </el-col>
       <el-col :xs="24" :sm="12" :md="6">
         <StatCard
-          label="Completed Work Orders"
+          :label="$t('dashboard.completedWorkOrders')"
           :value="stats.completedOrders"
           :icon="CircleCheck"
           icon-color="#67C23A"
@@ -40,7 +40,7 @@
       </el-col>
       <el-col :xs="24" :sm="12" :md="6">
         <StatCard
-          label="In Progress Work Orders"
+          :label="$t('dashboard.inProgressWorkOrders')"
           :value="stats.inProgressOrders"
           :icon="Clock"
           icon-color="#E6A23C"
@@ -50,7 +50,7 @@
       </el-col>
       <el-col :xs="24" :sm="12" :md="6">
         <StatCard
-          label="Exception Work Orders"
+          :label="$t('dashboard.exceptionWorkOrders')"
           :value="stats.exceptionOrders"
           :icon="Warning"
           icon-color="#F56C6C"
@@ -66,7 +66,7 @@
       <el-col :xs="24" :md="12">
         <el-card class="production-rate-card">
           <template #header>
-            <h3>Today's Production Completion Rate</h3>
+            <h3>{{ $t('dashboard.productionCompletionRate') }}</h3>
           </template>
           <div v-loading="loading" class="production-rate-content">
             <div class="rate-display">
@@ -85,15 +85,15 @@
               </div>
               <div class="rate-details">
                 <div class="detail-item">
-                  <span class="detail-label">Target Output:</span>
+                  <span class="detail-label">{{ $t('dashboard.targetOutput') }}</span>
                   <span class="detail-value">{{ productionRate.target }}</span>
                 </div>
                 <div class="detail-item">
-                  <span class="detail-label">Actual Output:</span>
+                  <span class="detail-label">{{ $t('dashboard.actualOutput') }}</span>
                   <span class="detail-value actual">{{ productionRate.actual }}</span>
                 </div>
                 <div class="detail-item">
-                  <span class="detail-label">Remaining:</span>
+                  <span class="detail-label">{{ $t('dashboard.remaining') }}</span>
                   <span class="detail-value remaining">{{ productionRate.remaining }}</span>
                 </div>
               </div>
@@ -105,7 +105,7 @@
       <!-- Equipment Status Distribution -->
       <el-col :xs="24" :md="12">
         <EChartsCard
-          title="Equipment Status Distribution"
+          :title="$t('dashboard.equipmentStatusDistribution')"
           :option="equipmentStatusOption"
           :height="320"
           :loading="loading"
@@ -120,7 +120,7 @@
       <!-- Exception Type Distribution -->
       <el-col :xs="24" :md="12">
         <EChartsCard
-          title="Exception Type Distribution"
+          :title="$t('dashboard.exceptionTypeDistribution')"
           :option="exceptionTypeOption"
           :height="320"
           :loading="loading"
@@ -132,7 +132,7 @@
       <!-- Equipment Failure TOP5 -->
       <el-col :xs="24" :md="12">
         <EChartsCard
-          title="Equipment Failure TOP 5"
+          :title="$t('dashboard.equipmentFailureTop5')"
           :option="equipmentFailureOption"
           :height="320"
           :loading="loading"
@@ -146,6 +146,7 @@
 
 <script setup>
 import { ref, reactive, computed, onMounted, onUnmounted } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { ElMessage } from 'element-plus'
 import {
   Refresh,
@@ -164,6 +165,8 @@ import {
   getDowntimeTypeDistribution,
   getEquipmentFailureTop5
 } from '@/api/dashboard'
+
+const { t } = useI18n()
 
 // 数据加载状态
 const loading = ref(false)
@@ -214,7 +217,7 @@ const equipmentStatusOption = ref({
   color: ['#67C23A', '#409EFF', '#E6A23C', '#F56C6C', '#909399'],
   series: [
     {
-      name: 'Equipment Status',
+      name: t('charts.equipmentStatus'),
       type: 'pie',
       radius: ['40%', '70%'],
       avoidLabelOverlap: false,
@@ -256,7 +259,7 @@ const exceptionTypeOption = ref({
   color: ['#1e4d8b', '#2965b0', '#3b7dd5', '#5a95e0', '#7aadeb'],
   series: [
     {
-      name: 'Exception Type',
+      name: t('charts.exceptionType'),
       type: 'pie',
       radius: ['40%', '70%'],
       avoidLabelOverlap: false,
@@ -297,7 +300,7 @@ const equipmentFailureOption = ref({
   },
   xAxis: {
     type: 'value',
-    name: 'Failure Count'
+    name: t('charts.failureCount')
   },
   yAxis: {
     type: 'category',
@@ -305,7 +308,7 @@ const equipmentFailureOption = ref({
   },
   series: [
     {
-      name: 'Failure Count',
+      name: t('charts.failureCount'),
       type: 'bar',
       data: [],
       barWidth: '60%',
@@ -406,7 +409,7 @@ const loadAllData = async () => {
     ])
   } catch (error) {
     console.error('Failed to load dashboard data:', error)
-    ElMessage.error('Failed to load dashboard data')
+    ElMessage.error(t('dashboard.failedToLoadData'))
   } finally {
     loading.value = false
   }
@@ -417,7 +420,7 @@ const handleManualRefresh = async () => {
   refreshing.value = true
   try {
     await loadAllData()
-    ElMessage.success('Data refreshed successfully')
+    ElMessage.success(t('dashboard.dataRefreshedSuccessfully'))
   } finally {
     refreshing.value = false
   }
