@@ -235,18 +235,18 @@ public class DashboardServiceImpl implements DashboardService {
         return WorkOrderProgressItem.builder()
                 .workOrderNo(workOrder.getWorkOrderNo())
                 .productCode(workOrder.getProductCode())
-                .productName(workOrder.getProductName())
+                .productName(workOrder.getProductCode()) // Use productCode as productName since entity doesn't have productName
                 .lineId(workOrder.getLineId())
                 .status(workOrder.getStatus().name())
                 .statusName(getWorkOrderStatusName(workOrder.getStatus()))
                 .planQty(workOrder.getPlanQty())
                 .actualQty(workOrder.getActualQty())
                 .completionRate(workOrder.getCompletionRate())
-                .planStartTime(workOrder.getPlanStartTime())
-                .planEndTime(workOrder.getPlanEndTime())
-                .actualStartTime(workOrder.getActualStartTime())
-                .actualEndTime(workOrder.getActualEndTime())
-                .priority(workOrder.getPriority())
+                .planStartTime(null) // Entity doesn't have planStartTime
+                .planEndTime(null) // Entity doesn't have planEndTime
+                .actualStartTime(workOrder.getStartTime()) // Use startTime instead
+                .actualEndTime(workOrder.getEndTime()) // Use endTime instead
+                .priority(0) // Entity doesn't have priority
                 .build();
     }
 
@@ -277,6 +277,7 @@ public class DashboardServiceImpl implements DashboardService {
             case COMPLETED -> "Completed";
             case ABNORMAL -> "Abnormal";
             case CANCELLED -> "Cancelled";
+            case CLOSED -> "Closed";
         };
     }
 

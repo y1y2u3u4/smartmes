@@ -33,9 +33,9 @@
               >
                 <el-option
                   v-for="product in productList"
-                  :key="product.code"
-                  :label="`${product.code} - ${product.name}`"
-                  :value="product.code"
+                  :key="product.productCode"
+                  :label="`${product.productCode} - ${product.productName}`"
+                  :value="product.productCode"
                 />
               </el-select>
             </el-form-item>
@@ -84,9 +84,9 @@
               >
                 <el-option
                   v-for="equip in equipmentList"
-                  :key="equip.id"
-                  :label="`${equip.code} - ${equip.name}`"
-                  :value="equip.code"
+                  :key="equip.equipmentId"
+                  :label="`${equip.equipmentId} - ${equip.equipmentName}`"
+                  :value="equip.equipmentId"
                 />
               </el-select>
             </el-form-item>
@@ -102,8 +102,8 @@
                 <el-option
                   v-for="op in operatorList"
                   :key="op.id"
-                  :label="`${op.employee_id} - ${op.name}`"
-                  :value="op.employee_id"
+                  :label="`${op.id} - ${op.name}`"
+                  :value="op.id"
                 />
               </el-select>
             </el-form-item>

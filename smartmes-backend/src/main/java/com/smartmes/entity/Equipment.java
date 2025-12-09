@@ -22,34 +22,28 @@ import java.time.LocalDateTime;
 public class Equipment {
 
     /**
-     * 设备主键ID
+     * 设备编号（主键）
      */
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-
-    /**
-     * 设备编号（唯一标识）
-     */
-    @Column(nullable = false, unique = true, length = 50)
+    @Column(name = "equipment_id", nullable = false, length = 50)
     private String equipmentId;
 
     /**
      * 设备名称
      */
-    @Column(nullable = false, length = 100)
+    @Column(name = "equipment_name", nullable = false, length = 100)
     private String equipmentName;
 
     /**
      * 设备类型（如：注塑机、冲压机、装配线等）
      */
-    @Column(length = 50)
+    @Column(name = "equipment_type", length = 50)
     private String equipmentType;
 
     /**
      * 所属产线ID
      */
-    @Column(length = 50)
+    @Column(name = "line_id", length = 50)
     private String lineId;
 
     /**
@@ -66,37 +60,37 @@ public class Equipment {
     /**
      * 上次维护时间
      */
-    @Column
+    @Column(name = "last_maintenance_time")
     private LocalDateTime lastMaintenanceTime;
 
     /**
      * 下次计划维护时间
      */
-    @Column
+    @Column(name = "next_maintenance_time")
     private LocalDateTime nextMaintenanceTime;
 
     /**
      * 设备位置/区域
      */
-    @Column(length = 100)
+    @Transient
     private String location;
 
     /**
      * 创建时间
      */
-    @Column(nullable = false, updatable = false)
+    @Column(name = "created_at", updatable = false)
     private LocalDateTime createTime;
 
     /**
      * 更新时间
      */
-    @Column
+    @Column(name = "updated_at")
     private LocalDateTime updateTime;
 
     /**
      * 备注信息
      */
-    @Column(length = 500)
+    @Transient
     private String remarks;
 
     /**

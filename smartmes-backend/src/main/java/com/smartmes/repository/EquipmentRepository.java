@@ -16,7 +16,7 @@ import java.util.Optional;
  * @version 1.0.0
  */
 @Repository
-public interface EquipmentRepository extends JpaRepository<Equipment, Long> {
+public interface EquipmentRepository extends JpaRepository<Equipment, String> {
 
     /**
      * 根据设备编号查询设备

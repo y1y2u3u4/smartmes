@@ -29,7 +29,7 @@ public interface WorkOrderService {
      * @param id 工单ID
      * @return 工单信息
      */
-    WorkOrder getWorkOrderById(Long id);
+    WorkOrder getWorkOrderById(String id);
 
     /**
      * 根据工单号查询工单
@@ -46,14 +46,14 @@ public interface WorkOrderService {
      * @param workOrder 更新的工单信息
      * @return 更新后的工单
      */
-    WorkOrder updateWorkOrder(Long id, WorkOrder workOrder);
+    WorkOrder updateWorkOrder(String id, WorkOrder workOrder);
 
     /**
      * 删除工单
      *
      * @param id 工单ID
      */
-    void deleteWorkOrder(Long id);
+    void deleteWorkOrder(String id);
 
     /**
      * 分页查询工单列表
@@ -89,18 +89,16 @@ public interface WorkOrderService {
      * @param id 工单ID
      * @return 更新后的工单
      */
-    WorkOrder startWorkOrder(Long id);
+    WorkOrder startWorkOrder(String id);
 
     /**
      * 完成工单
      *
      * @param id 工单ID
      * @param actualQty 实际产量
-     * @param qualifiedQty 合格数量
-     * @param defectQty 不合格数量
      * @return 更新后的工单
      */
-    WorkOrder completeWorkOrder(Long id, Integer actualQty, Integer qualifiedQty, Integer defectQty);
+    WorkOrder completeWorkOrder(String id, Integer actualQty);
 
     /**
      * 取消工单
@@ -108,27 +106,24 @@ public interface WorkOrderService {
      * @param id 工单ID
      * @return 更新后的工单
      */
-    WorkOrder cancelWorkOrder(Long id);
+    WorkOrder cancelWorkOrder(String id);
 
     /**
      * 标记工单异常
      *
      * @param id 工单ID
-     * @param remarks 异常备注
      * @return 更新后的工单
      */
-    WorkOrder markAbnormal(Long id, String remarks);
+    WorkOrder markAbnormal(String id);
 
     /**
      * 更新工单进度
      *
      * @param id 工单ID
      * @param actualQty 实际产量
-     * @param qualifiedQty 合格数量
-     * @param defectQty 不合格数量
      * @return 更新后的工单
      */
-    WorkOrder updateProgress(Long id, Integer actualQty, Integer qualifiedQty, Integer defectQty);
+    WorkOrder updateProgress(String id, Integer actualQty);
 
     /**
      * 查询指定状态的工单数量
@@ -145,22 +140,6 @@ public interface WorkOrderService {
      * @return 进行中的工单列表
      */
     List<WorkOrder> getInProgressWorkOrdersByLine(String lineId);
-
-    /**
-     * 查询逾期未完成的工单
-     *
-     * @param pageable 分页参数
-     * @return 逾期工单分页结果
-     */
-    PageResult<WorkOrder> getOverdueWorkOrders(Pageable pageable);
-
-    /**
-     * 批量创建工单
-     *
-     * @param workOrders 工单列表
-     * @return 创建的工单列表
-     */
-    List<WorkOrder> batchCreateWorkOrders(List<WorkOrder> workOrders);
 
     /**
      * 检查工单号是否存在

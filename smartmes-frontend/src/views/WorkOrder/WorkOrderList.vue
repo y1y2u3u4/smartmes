@@ -115,16 +115,22 @@ const fetchWorkOrders = async () => {
   loading.value = true
   try {
     const params = {
-      page: pagination.page,
-      page_size: pagination.pageSize,
-      work_order_number: filterForm.workOrderNumber,
-      batch_number: filterForm.batchNumber,
-      status: filterForm.status
+      pageNum: pagination.page,
+      pageSize: pagination.pageSize
     }
 
     const response = await getWorkOrderList(params)
-    tableData.value = response.data || []
-    pagination.total = response.total || 0
+    // Backend returns { code, message, data: { records, total, pageNum, pageSize } }
+    if (response.data && response.data.records) {
+      tableData.value = response.data.records || []
+      pagination.total = response.data.total || 0
+    } else if (Array.isArray(response.data)) {
+      tableData.value = response.data
+      pagination.total = response.data.length
+    } else {
+      tableData.value = []
+      pagination.total = 0
+    }
   } catch (error) {
     console.error('Failed to fetch work orders:', error)
     ElMessage.error('Failed to load work orders')
@@ -169,7 +175,7 @@ const handleEdit = (row) => {
 const handleDelete = async (row) => {
   try {
     await ElMessageBox.confirm(
-      `Are you sure you want to delete work order "${row.work_order_number}"?`,
+      `Are you sure you want to delete work order "${row.workOrderNo}"?`,
       'Delete Confirmation',
       {
         confirmButtonText: 'Delete',

@@ -1,7 +1,6 @@
 package com.smartmes.repository;
 
 import com.smartmes.entity.Product;
-import com.smartmes.entity.Product.ProductStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -16,7 +15,7 @@ import java.util.Optional;
  * @version 1.0.0
  */
 @Repository
-public interface ProductRepository extends JpaRepository<Product, Long> {
+public interface ProductRepository extends JpaRepository<Product, String> {
 
     /**
      * 根据产品编号查询产品
@@ -33,22 +32,9 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
     List<Product> findByProductNameContaining(String productName);
 
     /**
-     * 根据产品状态查询产品列表
-     * @param status 产品状态
-     * @return 产品列表
-     */
-    List<Product> findByStatus(ProductStatus status);
-
-    /**
      * 根据产品类型查询产品列表
      * @param productType 产品类型
      * @return 产品列表
      */
     List<Product> findByProductType(String productType);
-
-    /**
-     * 查询所有正常使用的产品
-     * @return 产品列表
-     */
-    List<Product> findByStatusOrderByProductCodeAsc(ProductStatus status);
 }

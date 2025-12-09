@@ -10,7 +10,6 @@ import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 
 /**
  * 工单数据访问层接口
@@ -20,21 +19,7 @@ import java.util.Optional;
  * @version 1.0.0
  */
 @Repository
-public interface WorkOrderRepository extends JpaRepository<WorkOrder, Long>, JpaSpecificationExecutor<WorkOrder> {
-
-    /**
-     * 检查工单号是否存在
-     * @param workOrderNo 工单号
-     * @return 是否存在
-     */
-    boolean existsByWorkOrderNo(String workOrderNo);
-
-    /**
-     * 根据工单号查询工单
-     * @param workOrderNo 工单号
-     * @return 工单信息
-     */
-    Optional<WorkOrder> findByWorkOrderNo(String workOrderNo);
+public interface WorkOrderRepository extends JpaRepository<WorkOrder, String>, JpaSpecificationExecutor<WorkOrder> {
 
     /**
      * 根据工单状态查询工单列表
@@ -63,7 +48,7 @@ public interface WorkOrderRepository extends JpaRepository<WorkOrder, Long>, Jpa
      * @param endTime 结束时间
      * @return 工单列表
      */
-    @Query("SELECT w FROM WorkOrder w WHERE w.createTime BETWEEN :startTime AND :endTime")
+    @Query("SELECT w FROM WorkOrder w WHERE w.createdAt BETWEEN :startTime AND :endTime")
     List<WorkOrder> findByCreateTimeBetween(@Param("startTime") LocalDateTime startTime,
                                            @Param("endTime") LocalDateTime endTime);
 
@@ -73,7 +58,7 @@ public interface WorkOrderRepository extends JpaRepository<WorkOrder, Long>, Jpa
      * @param endOfDay 当天结束时间
      * @return 工单列表
      */
-    @Query("SELECT w FROM WorkOrder w WHERE w.createTime >= :startOfDay AND w.createTime <= :endOfDay")
+    @Query("SELECT w FROM WorkOrder w WHERE w.createdAt >= :startOfDay AND w.createdAt <= :endOfDay")
     List<WorkOrder> findTodayWorkOrders(@Param("startOfDay") LocalDateTime startOfDay,
                                         @Param("endOfDay") LocalDateTime endOfDay);
 
@@ -84,7 +69,7 @@ public interface WorkOrderRepository extends JpaRepository<WorkOrder, Long>, Jpa
      * @param endOfDay 当天结束时间
      * @return 工单数量
      */
-    @Query("SELECT COUNT(w) FROM WorkOrder w WHERE w.status = :status AND w.createTime >= :startOfDay AND w.createTime <= :endOfDay")
+    @Query("SELECT COUNT(w) FROM WorkOrder w WHERE w.status = :status AND w.createdAt >= :startOfDay AND w.createdAt <= :endOfDay")
     Long countTodayWorkOrdersByStatus(@Param("status") WorkOrderStatus status,
                                       @Param("startOfDay") LocalDateTime startOfDay,
                                       @Param("endOfDay") LocalDateTime endOfDay);
@@ -95,7 +80,7 @@ public interface WorkOrderRepository extends JpaRepository<WorkOrder, Long>, Jpa
      * @param endOfDay 当天结束时间
      * @return 计划产量总数
      */
-    @Query("SELECT COALESCE(SUM(w.planQty), 0) FROM WorkOrder w WHERE w.createTime >= :startOfDay AND w.createTime <= :endOfDay")
+    @Query("SELECT COALESCE(SUM(w.planQty), 0) FROM WorkOrder w WHERE w.createdAt >= :startOfDay AND w.createdAt <= :endOfDay")
     Integer sumTodayPlanQty(@Param("startOfDay") LocalDateTime startOfDay,
                            @Param("endOfDay") LocalDateTime endOfDay);
 
@@ -105,14 +90,14 @@ public interface WorkOrderRepository extends JpaRepository<WorkOrder, Long>, Jpa
      * @param endOfDay 当天结束时间
      * @return 实际产量总数
      */
-    @Query("SELECT COALESCE(SUM(w.actualQty), 0) FROM WorkOrder w WHERE w.createTime >= :startOfDay AND w.createTime <= :endOfDay")
+    @Query("SELECT COALESCE(SUM(w.actualQty), 0) FROM WorkOrder w WHERE w.createdAt >= :startOfDay AND w.createdAt <= :endOfDay")
     Integer sumTodayActualQty(@Param("startOfDay") LocalDateTime startOfDay,
                              @Param("endOfDay") LocalDateTime endOfDay);
 
     /**
-     * 查询进行中的工单（按优先级和计划开始时间排序）
+     * 查询进行中的工单
      * @return 工单列表
      */
-    @Query("SELECT w FROM WorkOrder w WHERE w.status = 'IN_PROGRESS' ORDER BY w.priority DESC, w.planStartTime ASC")
+    @Query("SELECT w FROM WorkOrder w WHERE w.status = 'IN_PROGRESS' ORDER BY w.createdAt DESC")
     List<WorkOrder> findInProgressWorkOrders();
 }

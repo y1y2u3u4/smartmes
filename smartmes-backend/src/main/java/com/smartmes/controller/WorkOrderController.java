@@ -42,7 +42,7 @@ public class WorkOrderController {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public Result<WorkOrder> createWorkOrder(@Valid @RequestBody WorkOrder workOrder) {
-        log.info("REST request to create work order: {}", workOrder.getWorkOrderNo());
+        log.info("REST request to create work order: {}", workOrder.getId());
         try {
             WorkOrder created = workOrderService.createWorkOrder(workOrder);
             return Result.success("Work order created successfully", created);
@@ -56,35 +56,13 @@ public class WorkOrderController {
     }
 
     /**
-     * 批量创建工单
-     *
-     * @param workOrders 工单列表
-     * @return 创建的工单列表
-     */
-    @PostMapping("/batch")
-    @ResponseStatus(HttpStatus.CREATED)
-    public Result<List<WorkOrder>> batchCreateWorkOrders(@Valid @RequestBody List<WorkOrder> workOrders) {
-        log.info("REST request to batch create {} work orders", workOrders.size());
-        try {
-            List<WorkOrder> created = workOrderService.batchCreateWorkOrders(workOrders);
-            return Result.success("Work orders created successfully", created);
-        } catch (IllegalArgumentException e) {
-            log.error("Failed to batch create work orders: {}", e.getMessage());
-            return Result.error(400, e.getMessage());
-        } catch (Exception e) {
-            log.error("Failed to batch create work orders", e);
-            return Result.error("Failed to batch create work orders: " + e.getMessage());
-        }
-    }
-
-    /**
      * 查询工单详情
      *
      * @param id 工单ID
      * @return 工单信息
      */
     @GetMapping("/{id}")
-    public Result<WorkOrder> getWorkOrder(@PathVariable Long id) {
+    public Result<WorkOrder> getWorkOrder(@PathVariable String id) {
         log.info("REST request to get work order: {}", id);
         try {
             WorkOrder workOrder = workOrderService.getWorkOrderById(id);
@@ -132,7 +110,7 @@ public class WorkOrderController {
     public Result<PageResult<WorkOrder>> listWorkOrders(
             @RequestParam(defaultValue = "1") Integer pageNum,
             @RequestParam(defaultValue = "10") Integer pageSize,
-            @RequestParam(defaultValue = "createTime") String sortBy,
+            @RequestParam(defaultValue = "createdAt") String sortBy,
             @RequestParam(defaultValue = "DESC") String sortDir) {
 
         log.info("REST request to list work orders - page: {}, size: {}", pageNum, pageSize);
@@ -170,7 +148,7 @@ public class WorkOrderController {
             @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime endTime,
             @RequestParam(defaultValue = "1") Integer pageNum,
             @RequestParam(defaultValue = "10") Integer pageSize,
-            @RequestParam(defaultValue = "createTime") String sortBy,
+            @RequestParam(defaultValue = "createdAt") String sortBy,
             @RequestParam(defaultValue = "DESC") String sortDir) {
 
         log.info("REST request to search work orders - productCode: {}, status: {}, lineId: {}",
@@ -195,7 +173,7 @@ public class WorkOrderController {
      * @return 更新后的工单
      */
     @PutMapping("/{id}")
-    public Result<WorkOrder> updateWorkOrder(@PathVariable Long id, @RequestBody WorkOrder workOrder) {
+    public Result<WorkOrder> updateWorkOrder(@PathVariable String id, @RequestBody WorkOrder workOrder) {
         log.info("REST request to update work order: {}", id);
         try {
             WorkOrder updated = workOrderService.updateWorkOrder(id, workOrder);
@@ -216,7 +194,7 @@ public class WorkOrderController {
      * @return 删除结果
      */
     @DeleteMapping("/{id}")
-    public Result<Void> deleteWorkOrder(@PathVariable Long id) {
+    public Result<Void> deleteWorkOrder(@PathVariable String id) {
         log.info("REST request to delete work order: {}", id);
         try {
             workOrderService.deleteWorkOrder(id);
@@ -240,7 +218,7 @@ public class WorkOrderController {
      * @return 更新后的工单
      */
     @PutMapping("/{id}/start")
-    public Result<WorkOrder> startWorkOrder(@PathVariable Long id) {
+    public Result<WorkOrder> startWorkOrder(@PathVariable String id) {
         log.info("REST request to start work order: {}", id);
         try {
             WorkOrder workOrder = workOrderService.startWorkOrder(id);
@@ -261,18 +239,15 @@ public class WorkOrderController {
      * 完成工单
      *
      * @param id 工单ID
-     * @param request 完成请求参数（actualQty, qualifiedQty, defectQty）
+     * @param request 完成请求参数（actualQty）
      * @return 更新后的工单
      */
     @PutMapping("/{id}/complete")
-    public Result<WorkOrder> completeWorkOrder(@PathVariable Long id, @RequestBody Map<String, Integer> request) {
+    public Result<WorkOrder> completeWorkOrder(@PathVariable String id, @RequestBody Map<String, Integer> request) {
         log.info("REST request to complete work order: {}", id);
         try {
             Integer actualQty = request.get("actualQty");
-            Integer qualifiedQty = request.get("qualifiedQty");
-            Integer defectQty = request.get("defectQty");
-
-            WorkOrder workOrder = workOrderService.completeWorkOrder(id, actualQty, qualifiedQty, defectQty);
+            WorkOrder workOrder = workOrderService.completeWorkOrder(id, actualQty);
             return Result.success("Work order completed successfully", workOrder);
         } catch (IllegalArgumentException e) {
             log.error("Work order not found: {}", id);
@@ -293,7 +268,7 @@ public class WorkOrderController {
      * @return 更新后的工单
      */
     @PutMapping("/{id}/cancel")
-    public Result<WorkOrder> cancelWorkOrder(@PathVariable Long id) {
+    public Result<WorkOrder> cancelWorkOrder(@PathVariable String id) {
         log.info("REST request to cancel work order: {}", id);
         try {
             WorkOrder workOrder = workOrderService.cancelWorkOrder(id);
@@ -314,15 +289,13 @@ public class WorkOrderController {
      * 标记工单异常
      *
      * @param id 工单ID
-     * @param request 异常请求参数（remarks）
      * @return 更新后的工单
      */
     @PutMapping("/{id}/abnormal")
-    public Result<WorkOrder> markAbnormal(@PathVariable Long id, @RequestBody Map<String, String> request) {
+    public Result<WorkOrder> markAbnormal(@PathVariable String id) {
         log.info("REST request to mark work order as abnormal: {}", id);
         try {
-            String remarks = request.get("remarks");
-            WorkOrder workOrder = workOrderService.markAbnormal(id, remarks);
+            WorkOrder workOrder = workOrderService.markAbnormal(id);
             return Result.success("Work order marked as abnormal successfully", workOrder);
         } catch (IllegalArgumentException e) {
             log.error("Work order not found: {}", id);
@@ -340,18 +313,15 @@ public class WorkOrderController {
      * 更新工单进度
      *
      * @param id 工单ID
-     * @param request 进度请求参数（actualQty, qualifiedQty, defectQty）
+     * @param request 进度请求参数（actualQty）
      * @return 更新后的工单
      */
     @PutMapping("/{id}/progress")
-    public Result<WorkOrder> updateProgress(@PathVariable Long id, @RequestBody Map<String, Integer> request) {
+    public Result<WorkOrder> updateProgress(@PathVariable String id, @RequestBody Map<String, Integer> request) {
         log.info("REST request to update work order progress: {}", id);
         try {
             Integer actualQty = request.get("actualQty");
-            Integer qualifiedQty = request.get("qualifiedQty");
-            Integer defectQty = request.get("defectQty");
-
-            WorkOrder workOrder = workOrderService.updateProgress(id, actualQty, qualifiedQty, defectQty);
+            WorkOrder workOrder = workOrderService.updateProgress(id, actualQty);
             return Result.success("Work order progress updated successfully", workOrder);
         } catch (IllegalArgumentException e) {
             log.error("Work order not found: {}", id);
@@ -398,29 +368,6 @@ public class WorkOrderController {
         } catch (Exception e) {
             log.error("Failed to get in-progress work orders", e);
             return Result.error("Failed to get in-progress work orders: " + e.getMessage());
-        }
-    }
-
-    /**
-     * 查询逾期未完成的工单
-     *
-     * @param pageNum 页码
-     * @param pageSize 每页记录数
-     * @return 逾期工单分页列表
-     */
-    @GetMapping("/overdue")
-    public Result<PageResult<WorkOrder>> getOverdueWorkOrders(
-            @RequestParam(defaultValue = "1") Integer pageNum,
-            @RequestParam(defaultValue = "10") Integer pageSize) {
-
-        log.info("REST request to get overdue work orders");
-        try {
-            Pageable pageable = PageRequest.of(pageNum - 1, pageSize, Sort.by(Sort.Direction.DESC, "planEndTime"));
-            PageResult<WorkOrder> result = workOrderService.getOverdueWorkOrders(pageable);
-            return Result.success(result);
-        } catch (Exception e) {
-            log.error("Failed to get overdue work orders", e);
-            return Result.error("Failed to get overdue work orders: " + e.getMessage());
         }
     }
 

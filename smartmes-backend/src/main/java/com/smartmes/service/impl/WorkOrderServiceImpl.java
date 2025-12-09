@@ -34,12 +34,11 @@ public class WorkOrderServiceImpl implements WorkOrderService {
     @Override
     @Transactional(rollbackFor = Exception.class)
     public WorkOrder createWorkOrder(WorkOrder workOrder) {
-        log.info("Creating work order: {}", workOrder.getWorkOrderNo());
+        log.info("Creating work order: {}", workOrder.getId());
 
         // 检查工单号是否已存在
-        if (workOrder.getWorkOrderNo() != null &&
-            workOrderRepository.existsByWorkOrderNo(workOrder.getWorkOrderNo())) {
-            throw new IllegalArgumentException("Work order number already exists: " + workOrder.getWorkOrderNo());
+        if (workOrder.getId() != null && workOrderRepository.existsById(workOrder.getId())) {
+            throw new IllegalArgumentException("Work order number already exists: " + workOrder.getId());
         }
 
         // 设置初始状态
@@ -51,12 +50,6 @@ public class WorkOrderServiceImpl implements WorkOrderService {
         if (workOrder.getActualQty() == null) {
             workOrder.setActualQty(0);
         }
-        if (workOrder.getQualifiedQty() == null) {
-            workOrder.setQualifiedQty(0);
-        }
-        if (workOrder.getDefectQty() == null) {
-            workOrder.setDefectQty(0);
-        }
 
         WorkOrder saved = workOrderRepository.save(workOrder);
         log.info("Work order created successfully: {}", saved.getId());
@@ -64,7 +57,7 @@ public class WorkOrderServiceImpl implements WorkOrderService {
     }
 
     @Override
-    public WorkOrder getWorkOrderById(Long id) {
+    public WorkOrder getWorkOrderById(String id) {
         log.debug("Getting work order by id: {}", id);
         return workOrderRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Work order not found: " + id));
@@ -73,26 +66,20 @@ public class WorkOrderServiceImpl implements WorkOrderService {
     @Override
     public WorkOrder getWorkOrderByNo(String workOrderNo) {
         log.debug("Getting work order by number: {}", workOrderNo);
-        return workOrderRepository.findByWorkOrderNo(workOrderNo)
+        return workOrderRepository.findById(workOrderNo)
                 .orElseThrow(() -> new IllegalArgumentException("Work order not found: " + workOrderNo));
     }
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public WorkOrder updateWorkOrder(Long id, WorkOrder workOrder) {
+    public WorkOrder updateWorkOrder(String id, WorkOrder workOrder) {
         log.info("Updating work order: {}", id);
 
         WorkOrder existing = getWorkOrderById(id);
 
         // 更新可修改的字段
-        if (workOrder.getProductId() != null) {
-            existing.setProductId(workOrder.getProductId());
-        }
         if (workOrder.getProductCode() != null) {
             existing.setProductCode(workOrder.getProductCode());
-        }
-        if (workOrder.getProductName() != null) {
-            existing.setProductName(workOrder.getProductName());
         }
         if (workOrder.getLineId() != null) {
             existing.setLineId(workOrder.getLineId());
@@ -100,17 +87,14 @@ public class WorkOrderServiceImpl implements WorkOrderService {
         if (workOrder.getPlanQty() != null) {
             existing.setPlanQty(workOrder.getPlanQty());
         }
-        if (workOrder.getPlanStartTime() != null) {
-            existing.setPlanStartTime(workOrder.getPlanStartTime());
+        if (workOrder.getBatchNo() != null) {
+            existing.setBatchNo(workOrder.getBatchNo());
         }
-        if (workOrder.getPlanEndTime() != null) {
-            existing.setPlanEndTime(workOrder.getPlanEndTime());
+        if (workOrder.getEquipmentId() != null) {
+            existing.setEquipmentId(workOrder.getEquipmentId());
         }
-        if (workOrder.getPriority() != null) {
-            existing.setPriority(workOrder.getPriority());
-        }
-        if (workOrder.getRemarks() != null) {
-            existing.setRemarks(workOrder.getRemarks());
+        if (workOrder.getOperatorId() != null) {
+            existing.setOperatorId(workOrder.getOperatorId());
         }
 
         WorkOrder updated = workOrderRepository.save(existing);
@@ -120,7 +104,7 @@ public class WorkOrderServiceImpl implements WorkOrderService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void deleteWorkOrder(Long id) {
+    public void deleteWorkOrder(String id) {
         log.info("Deleting work order: {}", id);
 
         WorkOrder workOrder = getWorkOrderById(id);
@@ -176,11 +160,11 @@ public class WorkOrderServiceImpl implements WorkOrderService {
             }
 
             if (startTime != null) {
-                predicates.add(criteriaBuilder.greaterThanOrEqualTo(root.get("createTime"), startTime));
+                predicates.add(criteriaBuilder.greaterThanOrEqualTo(root.get("createdAt"), startTime));
             }
 
             if (endTime != null) {
-                predicates.add(criteriaBuilder.lessThanOrEqualTo(root.get("createTime"), endTime));
+                predicates.add(criteriaBuilder.lessThanOrEqualTo(root.get("createdAt"), endTime));
             }
 
             return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
@@ -197,7 +181,7 @@ public class WorkOrderServiceImpl implements WorkOrderService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public WorkOrder startWorkOrder(Long id) {
+    public WorkOrder startWorkOrder(String id) {
         log.info("Starting work order: {}", id);
 
         WorkOrder workOrder = getWorkOrderById(id);
@@ -208,7 +192,7 @@ public class WorkOrderServiceImpl implements WorkOrderService {
         }
 
         workOrder.setStatus(WorkOrderStatus.IN_PROGRESS);
-        workOrder.setActualStartTime(LocalDateTime.now());
+        workOrder.setStartTime(LocalDateTime.now());
 
         WorkOrder updated = workOrderRepository.save(workOrder);
         log.info("Work order started successfully: {}", id);
@@ -217,7 +201,7 @@ public class WorkOrderServiceImpl implements WorkOrderService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public WorkOrder completeWorkOrder(Long id, Integer actualQty, Integer qualifiedQty, Integer defectQty) {
+    public WorkOrder completeWorkOrder(String id, Integer actualQty) {
         log.info("Completing work order: {}", id);
 
         WorkOrder workOrder = getWorkOrderById(id);
@@ -229,10 +213,8 @@ public class WorkOrderServiceImpl implements WorkOrderService {
         }
 
         workOrder.setStatus(WorkOrderStatus.COMPLETED);
-        workOrder.setActualEndTime(LocalDateTime.now());
+        workOrder.setEndTime(LocalDateTime.now());
         workOrder.setActualQty(actualQty != null ? actualQty : workOrder.getActualQty());
-        workOrder.setQualifiedQty(qualifiedQty != null ? qualifiedQty : workOrder.getQualifiedQty());
-        workOrder.setDefectQty(defectQty != null ? defectQty : workOrder.getDefectQty());
 
         WorkOrder updated = workOrderRepository.save(workOrder);
         log.info("Work order completed successfully: {}", id);
@@ -241,7 +223,7 @@ public class WorkOrderServiceImpl implements WorkOrderService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public WorkOrder cancelWorkOrder(Long id) {
+    public WorkOrder cancelWorkOrder(String id) {
         log.info("Cancelling work order: {}", id);
 
         WorkOrder workOrder = getWorkOrderById(id);
@@ -261,7 +243,7 @@ public class WorkOrderServiceImpl implements WorkOrderService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public WorkOrder markAbnormal(Long id, String remarks) {
+    public WorkOrder markAbnormal(String id) {
         log.info("Marking work order as abnormal: {}", id);
 
         WorkOrder workOrder = getWorkOrderById(id);
@@ -272,9 +254,6 @@ public class WorkOrderServiceImpl implements WorkOrderService {
         }
 
         workOrder.setStatus(WorkOrderStatus.ABNORMAL);
-        if (remarks != null) {
-            workOrder.setRemarks(remarks);
-        }
 
         WorkOrder updated = workOrderRepository.save(workOrder);
         log.info("Work order marked as abnormal successfully: {}", id);
@@ -283,7 +262,7 @@ public class WorkOrderServiceImpl implements WorkOrderService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public WorkOrder updateProgress(Long id, Integer actualQty, Integer qualifiedQty, Integer defectQty) {
+    public WorkOrder updateProgress(String id, Integer actualQty) {
         log.info("Updating work order progress: {}", id);
 
         WorkOrder workOrder = getWorkOrderById(id);
@@ -295,12 +274,6 @@ public class WorkOrderServiceImpl implements WorkOrderService {
 
         if (actualQty != null) {
             workOrder.setActualQty(actualQty);
-        }
-        if (qualifiedQty != null) {
-            workOrder.setQualifiedQty(qualifiedQty);
-        }
-        if (defectQty != null) {
-            workOrder.setDefectQty(defectQty);
         }
 
         WorkOrder updated = workOrderRepository.save(workOrder);
@@ -324,67 +297,7 @@ public class WorkOrderServiceImpl implements WorkOrderService {
     }
 
     @Override
-    public PageResult<WorkOrder> getOverdueWorkOrders(Pageable pageable) {
-        log.debug("Getting overdue work orders");
-
-        LocalDateTime now = LocalDateTime.now();
-
-        Specification<WorkOrder> spec = (root, query, criteriaBuilder) -> {
-            Predicate planEndTimePredicate = criteriaBuilder.lessThan(root.get("planEndTime"), now);
-            Predicate statusPredicate = criteriaBuilder.or(
-                    criteriaBuilder.equal(root.get("status"), WorkOrderStatus.PENDING),
-                    criteriaBuilder.equal(root.get("status"), WorkOrderStatus.IN_PROGRESS),
-                    criteriaBuilder.equal(root.get("status"), WorkOrderStatus.ABNORMAL)
-            );
-            return criteriaBuilder.and(planEndTimePredicate, statusPredicate);
-        };
-
-        Page<WorkOrder> page = workOrderRepository.findAll(spec, pageable);
-
-        return PageResult.of(
-                page.getContent(),
-                page.getTotalElements(),
-                page.getNumber() + 1,
-                page.getSize()
-        );
-    }
-
-    @Override
-    @Transactional(rollbackFor = Exception.class)
-    public List<WorkOrder> batchCreateWorkOrders(List<WorkOrder> workOrders) {
-        log.info("Batch creating {} work orders", workOrders.size());
-
-        // 检查工单号唯一性
-        for (WorkOrder workOrder : workOrders) {
-            if (workOrder.getWorkOrderNo() != null &&
-                workOrderRepository.existsByWorkOrderNo(workOrder.getWorkOrderNo())) {
-                throw new IllegalArgumentException("Work order number already exists: " + workOrder.getWorkOrderNo());
-            }
-        }
-
-        // 设置默认值
-        for (WorkOrder workOrder : workOrders) {
-            if (workOrder.getStatus() == null) {
-                workOrder.setStatus(WorkOrderStatus.PENDING);
-            }
-            if (workOrder.getActualQty() == null) {
-                workOrder.setActualQty(0);
-            }
-            if (workOrder.getQualifiedQty() == null) {
-                workOrder.setQualifiedQty(0);
-            }
-            if (workOrder.getDefectQty() == null) {
-                workOrder.setDefectQty(0);
-            }
-        }
-
-        List<WorkOrder> saved = workOrderRepository.saveAll(workOrders);
-        log.info("Batch created {} work orders successfully", saved.size());
-        return saved;
-    }
-
-    @Override
     public boolean existsByWorkOrderNo(String workOrderNo) {
-        return workOrderRepository.existsByWorkOrderNo(workOrderNo);
+        return workOrderRepository.existsById(workOrderNo);
     }
 }

@@ -26,20 +26,20 @@ public interface EquipmentService {
      * @param equipment 设备信息
      * @return 更新后的设备
      */
-    Equipment updateEquipment(Long id, Equipment equipment);
+    Equipment updateEquipment(String id, Equipment equipment);
 
     /**
      * 删除设备
      * @param id 设备ID
      */
-    void deleteEquipment(Long id);
+    void deleteEquipment(String id);
 
     /**
      * 根据ID获取设备
      * @param id 设备ID
      * @return 设备信息
      */
-    Equipment getEquipmentById(Long id);
+    Equipment getEquipmentById(String id);
 
     /**
      * 根据设备编号获取设备

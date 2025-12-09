@@ -40,7 +40,7 @@ public class EquipmentServiceImpl implements EquipmentService {
     }
 
     @Override
-    public Equipment updateEquipment(Long id, Equipment equipment) {
+    public Equipment updateEquipment(String id, Equipment equipment) {
         log.info("更新设备: ID={}", id);
 
         Equipment existing = equipmentRepository.findById(id)
@@ -62,7 +62,7 @@ public class EquipmentServiceImpl implements EquipmentService {
     }
 
     @Override
-    public void deleteEquipment(Long id) {
+    public void deleteEquipment(String id) {
         log.info("删除设备: ID={}", id);
 
         if (!equipmentRepository.existsById(id)) {
@@ -75,7 +75,7 @@ public class EquipmentServiceImpl implements EquipmentService {
 
     @Override
     @Transactional(readOnly = true)
-    public Equipment getEquipmentById(Long id) {
+    public Equipment getEquipmentById(String id) {
         return equipmentRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Equipment not found with ID: " + id));
     }

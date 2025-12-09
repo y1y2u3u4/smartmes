@@ -10,62 +10,62 @@
     <el-table-column type="index" label="#" width="60" align="center" />
 
     <el-table-column
-      prop="work_order_number"
+      prop="workOrderNo"
       label="Work Order No."
       min-width="140"
       show-overflow-tooltip
     />
 
     <el-table-column
-      prop="product_code"
+      prop="productCode"
       label="Product Code"
       min-width="120"
       show-overflow-tooltip
     />
 
     <el-table-column
-      prop="batch_number"
+      prop="batchNo"
       label="Batch Number"
       min-width="120"
       show-overflow-tooltip
     />
 
     <el-table-column
-      prop="planned_quantity"
+      prop="planQty"
       label="Planned Qty"
       width="110"
       align="right"
     >
       <template #default="{ row }">
-        {{ formatNumber(row.planned_quantity) }}
+        {{ formatNumber(row.planQty) }}
       </template>
     </el-table-column>
 
     <el-table-column
-      prop="actual_quantity"
+      prop="actualQty"
       label="Actual Qty"
       width="110"
       align="right"
     >
       <template #default="{ row }">
-        {{ formatNumber(row.actual_quantity) }}
+        {{ formatNumber(row.actualQty) }}
       </template>
     </el-table-column>
 
     <el-table-column
-      prop="production_line"
+      prop="lineId"
       label="Production Line"
       min-width="130"
     />
 
     <el-table-column
-      prop="equipment"
+      prop="equipmentId"
       label="Equipment"
       min-width="120"
     />
 
     <el-table-column
-      prop="operator"
+      prop="operatorId"
       label="Operator"
       width="100"
     />
@@ -84,13 +84,13 @@
     </el-table-column>
 
     <el-table-column
-      prop="created_at"
+      prop="createdAt"
       label="Created At"
       width="160"
       show-overflow-tooltip
     >
       <template #default="{ row }">
-        {{ formatDateTime(row.created_at) }}
+        {{ formatDateTime(row.createdAt) }}
       </template>
     </el-table-column>
 
@@ -158,10 +158,12 @@ const emit = defineEmits(['view', 'edit', 'delete'])
 // 获取状态类型（颜色）
 const getStatusType = (status) => {
   const statusTypeMap = {
-    pending: 'info',
-    in_progress: 'primary',
-    completed: 'success',
-    exception: 'danger'
+    PENDING: 'info',
+    IN_PROGRESS: 'primary',
+    COMPLETED: 'success',
+    ABNORMAL: 'danger',
+    CANCELLED: 'warning',
+    CLOSED: ''
   }
   return statusTypeMap[status] || 'info'
 }
@@ -169,10 +171,12 @@ const getStatusType = (status) => {
 // 获取状态文本
 const getStatusText = (status) => {
   const statusTextMap = {
-    pending: 'Pending',
-    in_progress: 'In Progress',
-    completed: 'Completed',
-    exception: 'Exception'
+    PENDING: 'Pending',
+    IN_PROGRESS: 'In Progress',
+    COMPLETED: 'Completed',
+    ABNORMAL: 'Abnormal',
+    CANCELLED: 'Cancelled',
+    CLOSED: 'Closed'
   }
   return statusTextMap[status] || status
 }
