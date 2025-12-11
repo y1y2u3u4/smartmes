@@ -49,7 +49,7 @@ public interface WorkOrderRepository extends JpaRepository<WorkOrder, String>, J
      * @return 工单列表
      */
     @Query("SELECT w FROM WorkOrder w WHERE w.createdAt BETWEEN :startTime AND :endTime")
-    List<WorkOrder> findByCreatedAtBetween(@Param("startTime") LocalDateTime startTime,
+    List<WorkOrder> findByCreateTimeBetween(@Param("startTime") LocalDateTime startTime,
                                            @Param("endTime") LocalDateTime endTime);
 
     /**

@@ -2,15 +2,6 @@ import { createRouter, createWebHistory } from 'vue-router'
 
 const routes = [
   {
-    path: '/login',
-    name: 'Login',
-    component: () => import('@/views/Auth/LoginView.vue'),
-    meta: {
-      title: 'Login',
-      public: true
-    }
-  },
-  {
     path: '/',
     redirect: '/workorders'
   },
@@ -75,29 +66,12 @@ const router = createRouter({
   routes
 })
 
-// Route guard - Authentication check
+// 路由守卫 - 设置页面标题
 router.beforeEach((to, from, next) => {
-  // Set page title
   if (to.meta.title) {
     document.title = `${to.meta.title} - SmartMES Lite`
   }
-
-  // Check if route requires authentication
-  const isPublicRoute = to.meta.public === true
-  const isAuthenticated = !!localStorage.getItem('access_token')
-
-  if (!isPublicRoute && !isAuthenticated) {
-    // Redirect to login with return url
-    next({
-      path: '/login',
-      query: { redirect: to.fullPath }
-    })
-  } else if (to.path === '/login' && isAuthenticated) {
-    // Already logged in, redirect to home
-    next('/workorders')
-  } else {
-    next()
-  }
+  next()
 })
 
 export default router

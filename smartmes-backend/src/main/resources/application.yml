@@ -41,7 +41,7 @@ mybatis:
     log-impl: org.apache.ibatis.logging.slf4j.Slf4jImpl
 
 server:
-  port: 8081
+  port: 8080
   servlet:
     context-path: /api
 
@@ -51,9 +51,3 @@ logging:
     com.smartmes.mapper: DEBUG
   pattern:
     console: '%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n'
-
-# JWT Configuration
-jwt:
-  secret: ${JWT_SECRET:SmartMES-256-bit-secret-key-for-jwt-token-signing-2024}
-  access-token-expiration: 3600000  # 1 hour in milliseconds
-  refresh-token-expiration: 604800000  # 7 days in milliseconds
