@@ -61,11 +61,28 @@ CREATE TABLE user (
     role VARCHAR(20) NOT NULL COMMENT '角色: OPERATOR-操作员, SUPERVISOR-主管, ENGINEER-工程师, ADMIN-管理员',
     team VARCHAR(50) COMMENT '班组/团队',
     status VARCHAR(20) DEFAULT 'ACTIVE' COMMENT '用户状态: ACTIVE-启用, INACTIVE-停用',
+    last_login_time DATETIME COMMENT '最后登录时间',
+    login_attempts INT DEFAULT 0 COMMENT '登录失败次数',
+    locked_until DATETIME COMMENT '账户锁定截止时间',
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
     updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
     INDEX idx_username (username),
     INDEX idx_role (role)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='用户表';
+
+-- ============================================
+-- 3.1 Token黑名单表 (token_blacklist)
+-- Description: 存储已失效的JWT Token
+-- ============================================
+DROP TABLE IF EXISTS token_blacklist;
+CREATE TABLE token_blacklist (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY COMMENT '记录ID',
+    token_hash VARCHAR(64) NOT NULL COMMENT 'Token的SHA-256哈希值',
+    expires_at DATETIME NOT NULL COMMENT 'Token过期时间',
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+    INDEX idx_token_hash (token_hash) COMMENT 'Token哈希索引',
+    INDEX idx_expires_at (expires_at) COMMENT '过期时间索引（用于定期清理）'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Token黑名单表';
 
 -- ============================================
 -- 4. 工单表 (work_order)

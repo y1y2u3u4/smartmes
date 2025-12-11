@@ -77,6 +77,30 @@ public class WorkOrder {
     private Integer actualQty = 0;
 
     /**
+     * 合格数量
+     */
+    @Column(name = "qualified_qty")
+    private Integer qualifiedQty = 0;
+
+    /**
+     * 不良数量
+     */
+    @Column(name = "defect_qty")
+    private Integer defectQty = 0;
+
+    /**
+     * 完成率
+     */
+    @Column(name = "completion_rate")
+    private Double completionRate = 0.0;
+
+    /**
+     * 优先级
+     */
+    @Column(name = "priority")
+    private Integer priority = 0;
+
+    /**
      * 工单状态
      */
     @Column(nullable = false, length = 20)
@@ -94,6 +118,30 @@ public class WorkOrder {
      */
     @Column(name = "end_time")
     private LocalDateTime endTime;
+
+    /**
+     * 计划开始时间
+     */
+    @Column(name = "plan_start_time")
+    private LocalDateTime planStartTime;
+
+    /**
+     * 计划结束时间
+     */
+    @Column(name = "plan_end_time")
+    private LocalDateTime planEndTime;
+
+    /**
+     * 实际开始时间
+     */
+    @Column(name = "actual_start_time")
+    private LocalDateTime actualStartTime;
+
+    /**
+     * 实际结束时间
+     */
+    @Column(name = "actual_end_time")
+    private LocalDateTime actualEndTime;
 
     /**
      * 设备ID
@@ -158,6 +206,7 @@ public class WorkOrder {
         IN_PROGRESS,  // 进行中
         COMPLETED,    // 已完成
         ABNORMAL,     // 异常
-        CLOSED        // 已关闭
+        CLOSED,       // 已关闭
+        CANCELLED     // 已取消
     }
 }

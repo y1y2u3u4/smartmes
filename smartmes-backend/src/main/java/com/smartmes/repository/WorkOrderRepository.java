@@ -63,8 +63,8 @@ public interface WorkOrderRepository extends JpaRepository<WorkOrder, Long>, Jpa
      * @param endTime 结束时间
      * @return 工单列表
      */
-    @Query("SELECT w FROM WorkOrder w WHERE w.createTime BETWEEN :startTime AND :endTime")
-    List<WorkOrder> findByCreateTimeBetween(@Param("startTime") LocalDateTime startTime,
+    @Query("SELECT w FROM WorkOrder w WHERE w.createdAt BETWEEN :startTime AND :endTime")
+    List<WorkOrder> findByCreatedAtBetween(@Param("startTime") LocalDateTime startTime,
                                            @Param("endTime") LocalDateTime endTime);
 
     /**
@@ -73,7 +73,7 @@ public interface WorkOrderRepository extends JpaRepository<WorkOrder, Long>, Jpa
      * @param endOfDay 当天结束时间
      * @return 工单列表
      */
-    @Query("SELECT w FROM WorkOrder w WHERE w.createTime >= :startOfDay AND w.createTime <= :endOfDay")
+    @Query("SELECT w FROM WorkOrder w WHERE w.createdAt >= :startOfDay AND w.createdAt <= :endOfDay")
     List<WorkOrder> findTodayWorkOrders(@Param("startOfDay") LocalDateTime startOfDay,
                                         @Param("endOfDay") LocalDateTime endOfDay);
 
@@ -84,7 +84,7 @@ public interface WorkOrderRepository extends JpaRepository<WorkOrder, Long>, Jpa
      * @param endOfDay 当天结束时间
      * @return 工单数量
      */
-    @Query("SELECT COUNT(w) FROM WorkOrder w WHERE w.status = :status AND w.createTime >= :startOfDay AND w.createTime <= :endOfDay")
+    @Query("SELECT COUNT(w) FROM WorkOrder w WHERE w.status = :status AND w.createdAt >= :startOfDay AND w.createdAt <= :endOfDay")
     Long countTodayWorkOrdersByStatus(@Param("status") WorkOrderStatus status,
                                       @Param("startOfDay") LocalDateTime startOfDay,
                                       @Param("endOfDay") LocalDateTime endOfDay);
@@ -95,7 +95,7 @@ public interface WorkOrderRepository extends JpaRepository<WorkOrder, Long>, Jpa
      * @param endOfDay 当天结束时间
      * @return 计划产量总数
      */
-    @Query("SELECT COALESCE(SUM(w.planQty), 0) FROM WorkOrder w WHERE w.createTime >= :startOfDay AND w.createTime <= :endOfDay")
+    @Query("SELECT COALESCE(SUM(w.planQty), 0) FROM WorkOrder w WHERE w.createdAt >= :startOfDay AND w.createdAt <= :endOfDay")
     Integer sumTodayPlanQty(@Param("startOfDay") LocalDateTime startOfDay,
                            @Param("endOfDay") LocalDateTime endOfDay);
 
@@ -105,7 +105,7 @@ public interface WorkOrderRepository extends JpaRepository<WorkOrder, Long>, Jpa
      * @param endOfDay 当天结束时间
      * @return 实际产量总数
      */
-    @Query("SELECT COALESCE(SUM(w.actualQty), 0) FROM WorkOrder w WHERE w.createTime >= :startOfDay AND w.createTime <= :endOfDay")
+    @Query("SELECT COALESCE(SUM(w.actualQty), 0) FROM WorkOrder w WHERE w.createdAt >= :startOfDay AND w.createdAt <= :endOfDay")
     Integer sumTodayActualQty(@Param("startOfDay") LocalDateTime startOfDay,
                              @Param("endOfDay") LocalDateTime endOfDay);
 
