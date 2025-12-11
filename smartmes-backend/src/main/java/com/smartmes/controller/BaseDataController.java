@@ -22,7 +22,6 @@ import java.util.List;
 @RequestMapping("/base-data")
 @RequiredArgsConstructor
 @Slf4j
-@CrossOrigin(origins = "*")
 public class BaseDataController {
 
     private final EquipmentService equipmentService;
@@ -58,7 +57,7 @@ public class BaseDataController {
      * @return 更新后的设备
      */
     @PutMapping("/equipment/{id}")
-    public ApiResponse<Equipment> updateEquipment(@PathVariable Long id, @RequestBody Equipment equipment) {
+    public ApiResponse<Equipment> updateEquipment(@PathVariable String id, @RequestBody Equipment equipment) {
         log.info("接收请求: 更新设备 - ID={}", id);
         try {
             Equipment updated = equipmentService.updateEquipment(id, equipment);
@@ -77,7 +76,7 @@ public class BaseDataController {
      * @return 操作结果
      */
     @DeleteMapping("/equipment/{id}")
-    public ApiResponse<Void> deleteEquipment(@PathVariable Long id) {
+    public ApiResponse<Void> deleteEquipment(@PathVariable String id) {
         log.info("接收请求: 删除设备 - ID={}", id);
         try {
             equipmentService.deleteEquipment(id);
@@ -96,7 +95,7 @@ public class BaseDataController {
      * @return 设备信息
      */
     @GetMapping("/equipment/{id}")
-    public ApiResponse<Equipment> getEquipment(@PathVariable Long id) {
+    public ApiResponse<Equipment> getEquipment(@PathVariable String id) {
         log.info("接收请求: 获取设备详情 - ID={}", id);
         try {
             Equipment equipment = equipmentService.getEquipmentById(id);
@@ -167,17 +166,17 @@ public class BaseDataController {
 
     /**
      * 更新产品信息
-     * PUT /api/base-data/product/{id}
+     * PUT /api/base-data/product/{productCode}
      *
-     * @param id 产品ID
+     * @param productCode 产品编号
      * @param product 产品信息
      * @return 更新后的产品
      */
-    @PutMapping("/product/{id}")
-    public ApiResponse<Product> updateProduct(@PathVariable Long id, @RequestBody Product product) {
-        log.info("接收请求: 更新产品 - ID={}", id);
+    @PutMapping("/product/{productCode}")
+    public ApiResponse<Product> updateProduct(@PathVariable String productCode, @RequestBody Product product) {
+        log.info("接收请求: 更新产品 - productCode={}", productCode);
         try {
-            Product updated = productService.updateProduct(id, product);
+            Product updated = productService.updateProduct(productCode, product);
             return ApiResponse.success("Product updated successfully", updated);
         } catch (Exception e) {
             log.error("更新产品失败", e);
@@ -187,16 +186,16 @@ public class BaseDataController {
 
     /**
      * 删除产品
-     * DELETE /api/base-data/product/{id}
+     * DELETE /api/base-data/product/{productCode}
      *
-     * @param id 产品ID
+     * @param productCode 产品编号
      * @return 操作结果
      */
-    @DeleteMapping("/product/{id}")
-    public ApiResponse<Void> deleteProduct(@PathVariable Long id) {
-        log.info("接收请求: 删除产品 - ID={}", id);
+    @DeleteMapping("/product/{productCode}")
+    public ApiResponse<Void> deleteProduct(@PathVariable String productCode) {
+        log.info("接收请求: 删除产品 - productCode={}", productCode);
         try {
-            productService.deleteProduct(id);
+            productService.deleteProduct(productCode);
             return ApiResponse.success("Product deleted successfully", null);
         } catch (Exception e) {
             log.error("删除产品失败", e);
@@ -206,16 +205,16 @@ public class BaseDataController {
 
     /**
      * 获取产品详情
-     * GET /api/base-data/product/{id}
+     * GET /api/base-data/product/{productCode}
      *
-     * @param id 产品ID
+     * @param productCode 产品编号
      * @return 产品信息
      */
-    @GetMapping("/product/{id}")
-    public ApiResponse<Product> getProduct(@PathVariable Long id) {
-        log.info("接收请求: 获取产品详情 - ID={}", id);
+    @GetMapping("/product/{productCode}")
+    public ApiResponse<Product> getProduct(@PathVariable String productCode) {
+        log.info("接收请求: 获取产品详情 - productCode={}", productCode);
         try {
-            Product product = productService.getProductById(id);
+            Product product = productService.getProductById(productCode);
             return ApiResponse.success(product);
         } catch (Exception e) {
             log.error("获取产品详情失败", e);

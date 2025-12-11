@@ -10,7 +10,6 @@ import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 
 /**
  * 工单数据访问层接口
@@ -20,21 +19,7 @@ import java.util.Optional;
  * @version 1.0.0
  */
 @Repository
-public interface WorkOrderRepository extends JpaRepository<WorkOrder, Long>, JpaSpecificationExecutor<WorkOrder> {
-
-    /**
-     * 检查工单号是否存在
-     * @param workOrderNo 工单号
-     * @return 是否存在
-     */
-    boolean existsByWorkOrderNo(String workOrderNo);
-
-    /**
-     * 根据工单号查询工单
-     * @param workOrderNo 工单号
-     * @return 工单信息
-     */
-    Optional<WorkOrder> findByWorkOrderNo(String workOrderNo);
+public interface WorkOrderRepository extends JpaRepository<WorkOrder, String>, JpaSpecificationExecutor<WorkOrder> {
 
     /**
      * 根据工单状态查询工单列表
@@ -110,9 +95,9 @@ public interface WorkOrderRepository extends JpaRepository<WorkOrder, Long>, Jpa
                              @Param("endOfDay") LocalDateTime endOfDay);
 
     /**
-     * 查询进行中的工单（按优先级和计划开始时间排序）
+     * 查询进行中的工单
      * @return 工单列表
      */
-    @Query("SELECT w FROM WorkOrder w WHERE w.status = 'IN_PROGRESS' ORDER BY w.priority DESC, w.planStartTime ASC")
+    @Query("SELECT w FROM WorkOrder w WHERE w.status = 'IN_PROGRESS' ORDER BY w.createdAt DESC")
     List<WorkOrder> findInProgressWorkOrders();
 }

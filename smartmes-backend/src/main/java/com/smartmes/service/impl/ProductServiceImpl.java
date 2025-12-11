@@ -40,20 +40,16 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public Product updateProduct(Long id, Product product) {
-        log.info("更新产品: ID={}", id);
+    public Product updateProduct(String productCode, Product product) {
+        log.info("更新产品: productCode={}", productCode);
 
-        Product existing = productRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Product not found with ID: " + id));
+        Product existing = productRepository.findById(productCode)
+                .orElseThrow(() -> new RuntimeException("Product not found with code: " + productCode));
 
         // 更新字段
         existing.setProductName(product.getProductName());
-        existing.setSpecification(product.getSpecification());
         existing.setProductType(product.getProductType());
-        existing.setUnit(product.getUnit());
         existing.setStandardWorkTime(product.getStandardWorkTime());
-        existing.setStatus(product.getStatus());
-        existing.setRemarks(product.getRemarks());
 
         Product updated = productRepository.save(existing);
         log.info("产品更新成功: {}", updated.getProductCode());
@@ -61,22 +57,22 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public void deleteProduct(Long id) {
-        log.info("删除产品: ID={}", id);
+    public void deleteProduct(String productCode) {
+        log.info("删除产品: productCode={}", productCode);
 
-        if (!productRepository.existsById(id)) {
-            throw new RuntimeException("Product not found with ID: " + id);
+        if (!productRepository.existsById(productCode)) {
+            throw new RuntimeException("Product not found with code: " + productCode);
         }
 
-        productRepository.deleteById(id);
-        log.info("产品删除成功: ID={}", id);
+        productRepository.deleteById(productCode);
+        log.info("产品删除成功: productCode={}", productCode);
     }
 
     @Override
     @Transactional(readOnly = true)
-    public Product getProductById(Long id) {
-        return productRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Product not found with ID: " + id));
+    public Product getProductById(String productCode) {
+        return productRepository.findById(productCode)
+                .orElseThrow(() -> new RuntimeException("Product not found with code: " + productCode));
     }
 
     @Override

@@ -130,11 +130,19 @@ export const getEquipmentList = () => {
 
 /**
  * 获取操作员列表（用于下拉选择）
+ * 暂用静态数据
  * @returns {Promise}
  */
 export const getOperatorList = () => {
-  return request({
-    url: API_PATHS.OPERATOR.LIST,
-    method: 'GET'
+  return Promise.resolve({
+    code: 200,
+    message: 'Success',
+    data: [
+      { id: 'OP001', name: 'John Smith', role: 'Operator' },
+      { id: 'OP002', name: 'Jane Doe', role: 'Operator' },
+      { id: 'OP003', name: 'Bob Wilson', role: 'Senior Operator' },
+      { id: 'OP004', name: 'Alice Chen', role: 'Operator' },
+      { id: 'OP005', name: 'Mike Johnson', role: 'Lead Operator' }
+    ]
   })
 }

@@ -23,20 +23,20 @@ export const API_PATHS = {
 
   // 产品相关
   PRODUCT: {
-    LIST: '/products',
-    DETAIL: (id) => `/products/${id}`
+    LIST: '/base-data/product',
+    DETAIL: (id) => `/base-data/product/${id}`
   },
 
   // 设备相关
   EQUIPMENT: {
-    LIST: '/equipment',
-    DETAIL: (id) => `/equipment/${id}`
+    LIST: '/base-data/equipment',
+    DETAIL: (id) => `/base-data/equipment/${id}`
   },
 
-  // 操作员相关
+  // 操作员相关 (暂用静态数据)
   OPERATOR: {
-    LIST: '/operators',
-    DETAIL: (id) => `/operators/${id}`
+    LIST: '/users',
+    DETAIL: (id) => `/users/${id}`
   }
 }
 

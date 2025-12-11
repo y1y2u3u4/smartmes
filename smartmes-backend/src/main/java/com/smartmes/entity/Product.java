@@ -22,73 +22,64 @@ import java.time.LocalDateTime;
 public class Product {
 
     /**
-     * 产品主键ID
+     * 产品编号（主键）
      */
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-
-    /**
-     * 产品编号（唯一标识）
-     */
-    @Column(nullable = false, unique = true, length = 50)
+    @Column(name = "product_code", nullable = false, length = 50)
     private String productCode;
 
     /**
      * 产品名称
      */
-    @Column(nullable = false, length = 100)
+    @Column(name = "product_name", nullable = false, length = 100)
     private String productName;
-
-    /**
-     * 产品规格型号
-     */
-    @Column(length = 100)
-    private String specification;
 
     /**
      * 产品类型/分类
      */
-    @Column(length = 50)
+    @Column(name = "product_type", length = 50)
     private String productType;
-
-    /**
-     * 计量单位（如：件、箱、台等）
-     */
-    @Column(length = 20)
-    private String unit;
 
     /**
      * 标准工时（分钟）
      */
-    @Column
+    @Column(name = "standard_time")
     private Integer standardWorkTime;
-
-    /**
-     * 产品状态
-     * ACTIVE - 正常使用
-     * INACTIVE - 停用
-     */
-    @Column(nullable = false, length = 20)
-    @Enumerated(EnumType.STRING)
-    private ProductStatus status;
 
     /**
      * 创建时间
      */
-    @Column(nullable = false, updatable = false)
+    @Column(name = "created_at", updatable = false)
     private LocalDateTime createTime;
 
     /**
      * 更新时间
      */
-    @Column
+    @Column(name = "updated_at")
     private LocalDateTime updateTime;
 
     /**
-     * 备注信息
+     * 产品规格型号（不在数据库中）
      */
-    @Column(length = 500)
+    @Transient
+    private String specification;
+
+    /**
+     * 计量单位（不在数据库中）
+     */
+    @Transient
+    private String unit;
+
+    /**
+     * 产品状态（不在数据库中）
+     */
+    @Transient
+    private ProductStatus status;
+
+    /**
+     * 备注信息（不在数据库中）
+     */
+    @Transient
     private String remarks;
 
     /**

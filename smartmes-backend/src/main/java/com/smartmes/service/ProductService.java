@@ -22,24 +22,24 @@ public interface ProductService {
 
     /**
      * 更新产品信息
-     * @param id 产品ID
+     * @param productCode 产品编号
      * @param product 产品信息
      * @return 更新后的产品
      */
-    Product updateProduct(Long id, Product product);
+    Product updateProduct(String productCode, Product product);
 
     /**
      * 删除产品
-     * @param id 产品ID
+     * @param productCode 产品编号
      */
-    void deleteProduct(Long id);
+    void deleteProduct(String productCode);
 
     /**
-     * 根据ID获取产品
-     * @param id 产品ID
+     * 根据产品编号获取产品
+     * @param productCode 产品编号
      * @return 产品信息
      */
-    Product getProductById(Long id);
+    Product getProductById(String productCode);
 
     /**
      * 根据产品编号获取产品

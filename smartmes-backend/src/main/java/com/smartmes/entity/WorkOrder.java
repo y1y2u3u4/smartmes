@@ -10,6 +10,7 @@ import java.time.LocalDateTime;
 /**
  * 工单实体类
  * 用于管理生产工单信息
+ * 注意：字段与数据库表 work_order 完全匹配
  *
  * @author SmartMES Team
  * @version 1.0.0
@@ -22,41 +23,17 @@ import java.time.LocalDateTime;
 public class WorkOrder {
 
     /**
-     * 工单主键ID
+     * 工单号（主键）
      */
     @Id
     @Column(name = "order_id", length = 50)
     private String id;
 
     /**
-     * 工单号（唯一标识）
-     */
-    @Column(nullable = false, unique = true, length = 50)
-    private String workOrderNo;
-
-    /**
-     * 产品ID
-     */
-    @Column(nullable = false)
-    private Long productId;
-
-    /**
      * 产品编号
      */
-    @Column(length = 50)
+    @Column(name = "product_code", nullable = false, length = 50)
     private String productCode;
-
-    /**
-     * 产品名称
-     */
-    @Column(length = 100)
-    private String productName;
-
-    /**
-     * 生产产线ID
-     */
-    @Column(length = 50)
-    private String lineId;
 
     /**
      * 批次号
@@ -89,12 +66,6 @@ public class WorkOrder {
     private Integer defectQty = 0;
 
     /**
-     * 完成率
-     */
-    @Column(name = "completion_rate")
-    private Double completionRate = 0.0;
-
-    /**
      * 优先级
      */
     @Column(name = "priority")
@@ -103,7 +74,7 @@ public class WorkOrder {
     /**
      * 工单状态
      */
-    @Column(nullable = false, length = 20)
+    @Column(name = "status", nullable = false, length = 20)
     @Enumerated(EnumType.STRING)
     private WorkOrderStatus status;
 
@@ -144,6 +115,12 @@ public class WorkOrder {
     private LocalDateTime actualEndTime;
 
     /**
+     * 产线ID
+     */
+    @Column(name = "line_id", length = 50)
+    private String lineId;
+
+    /**
      * 设备ID
      */
     @Column(name = "equipment_id", length = 50)
@@ -158,7 +135,7 @@ public class WorkOrder {
     /**
      * 创建人
      */
-    @Column(name = "created_by", length = 50)
+    @Column(name = "created_by", nullable = false, length = 50)
     private String createdBy;
 
     /**
@@ -174,10 +151,18 @@ public class WorkOrder {
     private LocalDateTime updatedAt;
 
     /**
-     * 备注信息
+     * 完成率 (actualQty / planQty) - 非持久化字段
      */
-    @Column(length = 500)
-    private String remarks;
+    @Transient
+    private Double completionRate;
+
+    /**
+     * 工单号别名 - 用于兼容前端字段命名
+     */
+    @Transient
+    public String getWorkOrderNo() {
+        return this.id;
+    }
 
     /**
      * 创建时自动设置时间
@@ -199,6 +184,18 @@ public class WorkOrder {
     }
 
     /**
+     * 获取完成率
+     */
+    @PostLoad
+    public void calculateCompletionRate() {
+        if (planQty != null && planQty > 0) {
+            this.completionRate = (double) (actualQty != null ? actualQty : 0) / planQty;
+        } else {
+            this.completionRate = 0.0;
+        }
+    }
+
+    /**
      * 工单状态枚举
      */
     public enum WorkOrderStatus {
@@ -206,7 +203,7 @@ public class WorkOrder {
         IN_PROGRESS,  // 进行中
         COMPLETED,    // 已完成
         ABNORMAL,     // 异常
-        CLOSED,       // 已关闭
-        CANCELLED     // 已取消
+        CANCELLED,    // 已取消
+        CLOSED        // 已关闭
     }
 }
