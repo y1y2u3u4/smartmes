@@ -276,6 +276,7 @@ public class DashboardServiceImpl implements DashboardService {
             case IN_PROGRESS -> "In Progress";
             case COMPLETED -> "Completed";
             case ABNORMAL -> "Abnormal";
+            case CLOSED -> "Closed";
             case CANCELLED -> "Cancelled";
             case CLOSED -> "Closed";
         };
